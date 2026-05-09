@@ -1,0 +1,43 @@
+name: reason
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ci-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      JIO_TBOX: src/ontology/jio-core.ttl
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache ROBOT
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/robot
+          key: robot-1.9.5
+
+      - name: Run CI gate
+        run: bash scripts/ci-gate.sh
+
+      - name: Upload reasoned artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reasoned-debug
+          path: |
+            /tmp/reasoned*.owl
+            /tmp/unsat.csv
+            /tmp/hier.csv
+          if-no-files-found: ignore
