@@ -1,0 +1,11 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/jp2/jio-core> rdf:type owl:Ontology ;
+    rdfs:label   "JIO Core Ontology — Phase 0 stub" ;
+    rdfs:comment "Phase 0 stub T-Box. Declares ontology IRI and owl:imports only — no doctrinal classes. Exists to exercise the SMOKE-CLEAN B2 gate (imports resolve via catalog) before JI-005 lands canonical doctrinal content. Supersedes tests/stub/jio-stub.ttl as the harness target once JIO_TBOX points here." ;
+    owl:imports <http://purl.obolibrary.org/obo/bfo.owl> ,
+                <http://purl.obolibrary.org/obo/ro.owl> ,
+                <http://purl.obolibrary.org/obo/iao.owl> ,
+                <https://www.commoncoreontologies.org/CommonCoreOntologiesMerged> .

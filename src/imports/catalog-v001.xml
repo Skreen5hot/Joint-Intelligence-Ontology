@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  JIO offline import catalog (OASIS XML 1.1).
+  Maps upstream ontology IRIs to vendored copies in this directory.
+  Verified against docs/relation-mapping.md (JI-008).
+  URI values are relative to this catalog file's location.
+
+  When upgrading any vendored file, update the matching mapping here and run
+  scripts/ci-gate.sh to confirm B1+B2+B3+B4 still pass. UPSTREAM-BUMP ticket
+  type per Workflow v1.0 §7.
+-->
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri name="http://purl.obolibrary.org/obo/bfo.owl" uri="bfo-core.ttl"/>
+    <uri name="http://purl.obolibrary.org/obo/ro.owl"  uri="ro.owl"/>
+    <uri name="http://purl.obolibrary.org/obo/iao.owl" uri="iao-edit.owl"/>
+    <uri name="https://www.commoncoreontologies.org/CommonCoreOntologiesMerged" uri="CommonCoreOntologiesMerged.ttl"/>
+</catalog>
