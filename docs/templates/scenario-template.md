@@ -156,3 +156,4 @@ Things the SME wants Onto or Tester to flag during review. Optional.
 - **Must-infer (§7) and must-not-infer (§8) are both required.** Negative expectations are how brittleness is detected (workflow §3 DoR).
 - **At least one adversarial variant (§9).** The SME persona explicitly values "ensuring the reasoner degrades gracefully rather than drawing false, brittle conclusions" — this section is where that mandate lives.
 - **Doctrinal anchor must be paragraph-level.** "JP 3-60" alone is too coarse; "JP 3-60 App C ¶3" is correct. If you can't find a paragraph-level anchor, the scenario may be reaching beyond the doctrinal record — escalate to PM.
+- **Adversarial variant translation handoff:** Tester translates each variant narrative into `tests/fixtures/adversarial/<probe>/JI-###-<slug>.jsonld` plus sibling `expected.json`. SME provides the narrative; Tester owns the fixture file.
