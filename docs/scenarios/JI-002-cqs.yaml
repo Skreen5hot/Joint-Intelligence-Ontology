@@ -51,6 +51,7 @@
     - "ex:MilitaryFacility"
     - "ex:Imagery"
     - "ex:PostStrikeImagery"
+    - "ex:GeospatialAnalysisReport"
     - "ex:Phase1BDAReport"
     - "ex:Phase2BDAReport"
     - "ex:Phase3BDAReport"
@@ -91,21 +92,39 @@
   expected_form: none
   must_infer: []
   must_not_infer:
+    - "ex:CombatAssessmentProcess"
+    - "ex:BattleDamageAssessmentProcess"
     - "ex:Phase1BattleDamageAssessment"
     - "ex:Phase2BattleDamageAssessment"
     - "ex:Phase3BattleDamageAssessment"
     - "ex:MunitionsEffectivenessAssessment"
     - "ex:ReAttackRecommendation"
-    - "ex:CombatAssessmentProcess"
     - "ex:Target"
+    - "ex:IntelligenceAnalyst"
+    - "ex:TargetAnalyst"
     - "ex:TargetAnalysisRole"
+    - "ex:IntelligenceOperationsCenter"
+    - "ex:MilitaryFacility"
+    - "ex:Imagery"
+    - "ex:PostStrikeImagery"
+    - "ex:GeospatialAnalysisReport"
+    - "ex:Phase1BDAReport"
+    - "ex:Phase2BDAReport"
+    - "ex:Phase3BDAReport"
+    - "ex:MEAReport"
+    - "ex:RARReport"
+    - "ex:IntelligenceProduct"
+    - "ex:GEOINTProduct"
+    - "ex:Report"
   doctrinal_anchor: "ADR-001 (jio:derivedFrom selection); scope §5 #9; §5 #1 (c)"
   rationale: >
     Acceptance criteria #9 + #1 sub-criterion (c). Doctrinal traceability
     requires every ex:* class carry a jio:derivedFrom annotation per
     ADR-001's Option B selection. None-form: classes without the
-    annotation must be empty. Pairs naturally with Tester's JI-004c
-    relation-mapping coverage probe.
+    annotation must be empty. Enumeration mirrors CQ-001 (full v1.0 ex:*
+    class set) so that a class could not silently ship without
+    jio:derivedFrom and escape detection. Pairs naturally with Tester's
+    JI-004c relation-mapping coverage probe.
 
 # ============================================================================
 # Criterion #2 — 5 temporal orderings
@@ -124,6 +143,14 @@
     Functional Damage Assessment requires the Phase I Physical Damage
     Assessment as its prerequisite analysis. Tests obo:BFO_0000062
     (preceded by) inference.
+
+    Scoping note (per JI-002 review B-5): CQ-004 through CQ-008 verify
+    A-Box-asserted ordering propagating through BFO_0000063 transitivity in
+    the canonical scenario. T-Box-level ordering inference (e.g., "every
+    Phase2 individual must have some Phase1 predecessor regardless of
+    A-Box") is a different CQ pattern using someValuesFrom semantics on
+    subClassOf — reserved for v1.x. v1.0 acceptance is the canonical-
+    scenario verification.
 
 - id: CQ-005
   question: "Does Phase II BDA precede Phase III BDA in the canonical CA scenario?"
@@ -198,10 +225,15 @@
   rationale: >
     Acceptance criterion #3 positive case. A correctly-instantiated process
     individual with all required inputs (a sensor product) and outputs
-    (Phase1BDAReport) classifies as the expected sub-class regardless of
-    Onto's chosen encoding (someValuesFrom restrictions, closure axioms,
-    property chains — Onto's lane per workflow §5). This validates
-    inferential behavior, not encoding choice.
+    (Phase1BDAReport) classifies as the expected sub-class. SME doctrinal
+    call (per JI-002 review B-2 / Onto Option α): the five CA leaf process
+    classes (Phase1BDA, Phase2BDA, Phase3BDA, MEA, RAR) are defined classes
+    via owl:equivalentClass — necessary AND sufficient conditions — so an
+    untyped process individual with the right I/O is classified into the
+    leaf class by the reasoner. Encoding choice within that constraint
+    (someValuesFrom restrictions inside the equivalentClass body, closure
+    axioms, property chains) remains Onto's lane per workflow §5. This
+    validates inferential behavior, not encoding form.
 
 - id: CQ-010
   question: "Are any process individuals lacking required inputs/outputs inferred as Combat Assessment sub-classes?"
@@ -218,8 +250,12 @@
   rationale: >
     Acceptance criterion #3 negative case. A bare BFO_0000015 individual
     without inputs/outputs must not be inferred into any CA sub-class.
-    Pairs with Tester's underconstraint_test adversarial probe. Catches
-    the "every Process is a BDA" overgeneration failure mode.
+    Pairs symmetrically with CQ-009 under defined-class encoding (Option α
+    per JI-002 review B-2): if the leaf classes are owl:equivalentClass
+    definitions, then absence of the required I/O denies classification —
+    the negative case is the contrapositive of the positive. Pairs with
+    Tester's underconstraint_test adversarial probe. Catches the "every
+    Process is a BDA" overgeneration failure mode.
 
 # ============================================================================
 # Criterion #4 — ICE ≢ Process
@@ -280,19 +316,30 @@
     - "ex:Target_Bridge_42"
   must_not_infer:
     - "ex:Site_CENTCOM_JIOC"
-    - "ex:ICE_UAV_Imagery_001"
-    - "ex:ICE_Phase1_Report_001"
     - "ex:Role_TargetAnalysis_Jane_001"
   doctrinal_anchor: "scope §3.5; JP 3-60 — targets are participants, not intentional objects"
   scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
   rationale: >
-    Cross-cutting check that has_participant correctly scopes to agents and
-    targets but not to facilities (occurs_at), ICEs (has_input/has_output),
-    or roles (which are realized in, not participants). Catches three
-    overgeneration failures at once: facility-as-participant, ICE-as-
-    participant, and role-as-participant. Note: instance IRIs are
-    placeholder forward references to JI-005's canonical scenario; if Onto
-    chooses different IRIs during IRI-fication, this CQ updates to match.
+    Cross-cutting check that has_participant correctly scopes to agents,
+    targets, facilities, and roles distinctly:
+      - Agents (Jane) and targets (Bridge_42) ARE participants — must_infer.
+      - Facilities use occurs_at (not has_participant) — must_not_infer.
+      - Roles use realized_in (not has_participant) — must_not_infer.
+
+    NOTE on ICEs: per CCO encoding (verified in docs/relation-mapping.md
+    §CCO Object Properties), cco:ont00001921 (has_input) and
+    cco:ont00001986 (has_output) are both rdfs:subPropertyOf
+    obo:BFO_0000057 (has_participant). This means ICE inputs and outputs
+    ARE inferred as has_participants of the process by sub-property
+    entailment from the upstream CCO axioms — a fact this CQ does not
+    contest. The narrow doctrinal participation distinction (agent/target
+    vs ICE) lives in the specific property used (has_input/has_output vs
+    has_participant directly), not in exclusion at the super-property
+    level. See JI-002 review B-1 / Onto Fix-A for the rationale.
+
+    Instance IRIs are placeholder forward references to JI-005's
+    canonical scenario; if Onto chooses different IRIs during
+    IRI-fication, this CQ updates to match.
 
 - id: CQ-014
   question: "How many distinct Combat Assessment sub-processes are part_of the canonical Combat Assessment scenario instance?"
