@@ -93,9 +93,17 @@ gate_b2() {
 run_blocking "B2 Imports resolve" gate_b2
 
 # ---- B3: TBox consistent -----------------------------------------------------
+# Reasoner choice: ELK for Phase 0 stub T-Box. ELK is dramatically faster than
+# HermiT (~30s vs >15min on full CCO+BFO+IAO+RO on a GitHub runner) and is
+# sufficient for Phase 0 — the stub T-Box declares no doctrinal classes, so the
+# OWL DL features ELK doesn't support (e.g., complex role chains, full
+# qualified cardinality on transitive properties) aren't exercised. JI-005's
+# axiomatization should re-evaluate this choice when full doctrinal axioms
+# land — switch back to HermiT or hybrid (ELK for B3, HermiT for B4 unsat
+# detection on doctrinal classes specifically) at that time.
 gate_b3() {
   "${ROBOT_RUN[@]}" ${CATALOG_FLAG} merge --input "${TBOX}" \
-    reason --reasoner hermit --output /tmp/reasoned.owl >/dev/null
+    reason --reasoner elk --output /tmp/reasoned.owl >/dev/null
 }
 run_blocking "B3 TBox consistent" gate_b3
 [[ ${BLOCKING_FAIL} -eq 1 ]] && exit 1
