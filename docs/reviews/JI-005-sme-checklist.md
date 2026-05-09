@@ -44,12 +44,23 @@ For each subsection of [scope §3](../scope.md), verify the corresponding T-Box 
 - [ ] `ex:ReAttackRecommendation subClassOf ex:CombatAssessmentProcess` (also a sister of BDA)
 - [ ] Five CA sub-process classes are pairwise disjoint per Onto C-2 (5 classes → 10 disjointness axioms; or one `owl:AllDisjointClasses` block)
 
-### Analyst roles (scope §3.2)
+### Analyst roles (scope §3.2 + structural plumbing for anti-rigidity)
 
-- [ ] `ex:IntelligenceAnalyst` declared as a class, **NOT** as `subClassOf cco:ont00001262` (Person). The anti-rigidity refactor's whole point.
-- [ ] `ex:TargetAnalyst subClassOf ex:IntelligenceAnalyst` (specialization within the analyst class hierarchy is OK — what's not OK is rigid Person sub-classing)
-- [ ] `ex:TargetAnalysisRole subClassOf cco:ont00000984 (OccupationRole)` (this is correct sub-classing — Roles are realizable entities, not rigid types of agents)
-- [ ] An axiom (somewhere — restriction, equivalent class, or property chain) capturing "an instance is a TargetAnalyst iff it is a Person bearing a TargetAnalysisRole." Encoding choice is Onto's lane; behavior verified via CQ-012 and `role_stress_test`.
+Per Onto's PR #12 review heads-up: anti-rigidity + specialization compose only with explicit role-hierarchy plumbing. The structural class `ex:AnalyticalRole` (not in scope §3.2's enumeration; documented in [patterns.md](../patterns.md) under "Anti-rigidity Person/Role separation") makes the composition work.
+
+**Role hierarchy (structural, with `ex:AnalyticalRole` as parent):**
+- [ ] `ex:AnalyticalRole subClassOf cco:ont00000984` (OccupationRole) — structural parent for analytical roles; carries `iao:IAO_0000115 "An OccupationRole pertaining to intelligence analysis activities"` and `jio:derivedFrom "JP 2-0 ch.III"`
+- [ ] `ex:TargetAnalysisRole subClassOf ex:AnalyticalRole` (NOT directly to `cco:ont00000984` — this is the change from the v0 plan)
+
+**Class hierarchy (defined classes via `owl:equivalentClass`):**
+- [ ] `ex:IntelligenceAnalyst` declared as a class, **NOT** as `rdfs:subClassOf cco:ont00001262` (Person). The anti-rigidity refactor's whole point.
+- [ ] `ex:IntelligenceAnalyst owl:equivalentClass [Person ⊓ bearer_of some ex:AnalyticalRole]` — defined as Person bearing an analytical role (any sub-class of `ex:AnalyticalRole`).
+- [ ] `ex:TargetAnalyst owl:equivalentClass [Person ⊓ bearer_of some ex:TargetAnalysisRole]` — defined as Person bearing the specific TargetAnalysisRole.
+- [ ] **Specialization relation `ex:TargetAnalyst ⊑ ex:IntelligenceAnalyst` is INFERRED** by the role hierarchy (since `ex:TargetAnalysisRole ⊑ ex:AnalyticalRole`), NOT asserted directly with `rdfs:subClassOf`. Verify this inference is present in the reasoned model, not just the asserted T-Box.
+
+**Anti-rigidity behavioral check (CQ-012, `role_stress_test`):**
+- [ ] An agent typed only as `cco:ont00001262` (Person) bearing a `cco:ont00000984` instance that is NOT an `ex:AnalyticalRole` is NOT classified as IntelligenceAnalyst. Catches the failure mode where the wrong-type role would still be inferred to bearer-of-some-OccupationRole and incorrectly promote the agent.
+- [ ] An agent typed only as Person with no `bearer_of` triple is NOT classified as IntelligenceAnalyst or TargetAnalyst.
 
 ### Facilities (scope §3.3)
 
