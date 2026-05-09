@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Protégé
+.metadata/
+catalog-v001.xml.bak
+*.history
+
+# Reasoner intermediates (kept in /tmp by our scripts; this is belt-and-braces)
+*.reasoned.owl
+*.merged.owl
+
+# Local ROBOT cache (devs may symlink ~/.cache/robot here)
+.robot-cache/
+
+# Claude Code local state (per-machine settings, not project content)
+.claude/
+
+# Python (in case anyone adds owlready2 utils later)
+__pycache__/
+*.pyc
+.venv/

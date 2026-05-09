@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "obo": "http://purl.obolibrary.org/obo/",
+    "cco": "https://www.commoncoreontologies.org/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "http://example.org/jp2/",
+    "obo:BFO_0000056": { "@type": "@id" }
+  },
+  "@graph": [
+    {
+      "@id": "ex:Agent_NoRole_001",
+      "@type": ["cco:ont00001262", "owl:NamedIndividual"],
+      "rdfs:label": "Agent without role (probe)",
+      "rdfs:comment": "Adversarial fixture for role_stress_test. Person participates in a Phase I BDA process but bears no TargetAnalysisRole. Must NOT be inferred as ex:TargetAnalyst from participation alone.",
+      "obo:BFO_0000056": { "@id": "ex:Process_Phase1BDA_RoleProbe_001" }
+    },
+    {
+      "@id": "ex:Process_Phase1BDA_RoleProbe_001",
+      "@type": ["ex:Phase1BattleDamageAssessment", "owl:NamedIndividual"],
+      "rdfs:label": "Phase I BDA (role-stress probe scenario)"
+    }
+  ]
+}

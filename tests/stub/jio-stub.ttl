@@ -1,0 +1,17 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/jp2/jio-stub#> .
+
+<http://example.org/jp2/jio-stub> a owl:Ontology ;
+    rdfs:label   "JIO Phase 0 Harness Stub" ;
+    rdfs:comment "Tester-owned minimal T-Box for CI gate validation. Does NOT represent the JIO domain ontology. JI-003 produces the canonical T-Box at src/ontology/jio-core.ttl, which supersedes this file." .
+
+:StubClass a owl:Class ;
+    rdfs:label   "Stub Class" ;
+    rdfs:comment "Placeholder so the reasoner has a named class to evaluate. Delete after JI-003." .
+
+:StubSubClass a owl:Class ;
+    rdfs:subClassOf :StubClass ;
+    rdfs:label   "Stub SubClass" ;
+    rdfs:comment "Placeholder subclass — confirms inferred-hierarchy snapshot has at least one non-trivial entry." .

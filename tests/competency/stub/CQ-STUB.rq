@@ -1,0 +1,11 @@
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX :     <http://example.org/jp2/jio-stub#>
+
+# Wiring proof. Confirms the SPARQL runner can:
+#   1. Load the merged ontology
+#   2. Execute a query against asserted + inferred triples
+#   3. Compare result to expected.json
+# Delete this stub once a real CQ from JI-002 has its translation.
+
+ASK { :StubSubClass rdfs:subClassOf :StubClass }

@@ -1,0 +1,14 @@
+{
+  "test_id": "role_stress_test",
+  "fixture": "tests/fixtures/adversarial/role_stress_test/fixture.jsonld",
+  "probe_source": "config/logic_ontologist_tester.yaml#adversarial_tests.role_stress_test",
+  "must_surface": [],
+  "must_not_surface": [
+    {
+      "kind": "type_inference",
+      "individual": "ex:Agent_NoRole_001",
+      "type": "ex:TargetAnalyst",
+      "rationale": "Participation in a BDA process must not promote an agent to TargetAnalyst. Promotion requires bearing a TargetAnalysisRole. If this inference fires, the ontology has lost role anti-rigidity."
+    }
+  ]
+}

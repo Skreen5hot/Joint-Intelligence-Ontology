@@ -1,0 +1,20 @@
+{
+  "test_id": "process_boundary_test",
+  "fixture": "tests/fixtures/adversarial/process_boundary_test/fixture.jsonld",
+  "probe_source": "config/logic_ontologist_tester.yaml#adversarial_tests.process_boundary_test",
+  "must_surface": [],
+  "must_not_surface": [
+    {
+      "kind": "same_as",
+      "left": "ex:Process_Phase1_BoundaryProbe",
+      "right": "ex:Process_Phase2_BoundaryProbe",
+      "rationale": "Phase I and Phase II BDA individuals share a parent process but are doctrinally distinct activities. Inferred sameAs would indicate a property-chain or restriction collapse."
+    },
+    {
+      "kind": "equivalent_classes",
+      "left": "ex:Phase1BattleDamageAssessment",
+      "right": "ex:Phase2BattleDamageAssessment",
+      "rationale": "Phase I and Phase II BDA classes must remain non-equivalent. Equivalence would indicate over-identical EquivalentTo definitions."
+    }
+  ]
+}
