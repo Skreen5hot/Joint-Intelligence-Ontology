@@ -1,0 +1,383 @@
+# JI-002 — v1.0 Acceptance Competency Questions
+#
+# Author:               SME
+# Date:                 2026-05-09
+# Scope reference:      docs/scope.md §5 (Acceptance Criteria for v1.0)
+# CQ template:          docs/templates/cq-template.yaml (Tester JI-002a)
+# Companion narrative:  docs/scenarios/JI-005-canonical-ca.md (SME-authored under JI-005)
+# Companion A-Box:      src/instances/JI-005-canonical-ca.jsonld (Onto-produced under JI-005)
+#
+# Coverage map (15 CQs against scope §5):
+#   - Criterion #1 (axiomatization triad) + #9 (jio:derivedFrom): CQ-001, CQ-002, CQ-003
+#   - Criterion #2 (5 temporal orderings):                         CQ-004, CQ-005, CQ-006, CQ-007, CQ-008
+#   - Criterion #3 (has_input/has_output behavior):                CQ-009 (positive), CQ-010 (negative)
+#   - Criterion #4 (ICE ≢ Process):                                CQ-011
+#   - Criterion #5 (anti-rigidity):                                CQ-012
+#   - Cross-cutting (target-as-participant, CA completeness, agent/target distinction): CQ-013, CQ-014, CQ-015
+#
+# IRI conventions per JI-008:
+#   ex:  http://example.org/jp2/
+#   obo: http://purl.obolibrary.org/obo/
+#   cco: https://www.commoncoreontologies.org/                    (corrected per JI-008 F-1)
+#   jio: project namespace (canonical IRI defined by Onto in JI-005 per ADR-001)
+#
+# Forward-reference notice: instance IRIs in CQ-013 and CQ-015 (e.g., ex:Analyst_Jane_001,
+# ex:Target_Bridge_42) are placeholders that JI-005's canonical scenario will instantiate.
+# If Onto chooses different instance IRIs during JI-005 IRI-fication of the SME narrative,
+# update these CQs to match.
+
+# ============================================================================
+# Criterion #1 (axiomatization triad: definition + ≥1 logical axiom + jio:derivedFrom)
+# Criterion #9 (jio:derivedFrom on every ex:* class)
+# ============================================================================
+
+- id: CQ-001
+  question: "Are there any ex:* classes lacking an iao:IAO_0000115 (textual definition) annotation?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:CombatAssessmentProcess"
+    - "ex:BattleDamageAssessmentProcess"
+    - "ex:Phase1BattleDamageAssessment"
+    - "ex:Phase2BattleDamageAssessment"
+    - "ex:Phase3BattleDamageAssessment"
+    - "ex:MunitionsEffectivenessAssessment"
+    - "ex:ReAttackRecommendation"
+    - "ex:Target"
+    - "ex:IntelligenceAnalyst"
+    - "ex:TargetAnalyst"
+    - "ex:AnalyticalRole"
+    - "ex:TargetAnalysisRole"
+    - "ex:IntelligenceOperationsCenter"
+    - "ex:MilitaryFacility"
+    - "ex:Imagery"
+    - "ex:PostStrikeImagery"
+    - "ex:GeospatialAnalysisReport"
+    - "ex:Phase1BDAReport"
+    - "ex:Phase2BDAReport"
+    - "ex:Phase3BDAReport"
+    - "ex:MEAReport"
+    - "ex:RARReport"
+    - "ex:IntelligenceProduct"
+    - "ex:GEOINTProduct"
+    - "ex:Report"
+  doctrinal_anchor: "scope §5 #1 (a); workflow §3.3 (Aristotelian definition form)"
+  rationale: >
+    Acceptance criterion #1 sub-criterion (a). Every ex:* class declared
+    in v1.0 must carry an Aristotelian textual definition. None-form: SPARQL
+    returns ex:* classes WITHOUT IAO_0000115 — must be empty. The
+    must_not_infer list enumerates the classes that must be present and
+    annotated.
+
+- id: CQ-002
+  question: "Are there any ex:* classes lacking at least one logical axiom (subClassOf placement, equivalentClass definition, or someValuesFrom/allValuesFrom restriction)?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:Phase1BattleDamageAssessment"
+    - "ex:Phase2BattleDamageAssessment"
+    - "ex:Phase3BattleDamageAssessment"
+    - "ex:MunitionsEffectivenessAssessment"
+    - "ex:ReAttackRecommendation"
+    - "ex:CombatAssessmentProcess"
+    - "ex:BattleDamageAssessmentProcess"
+  doctrinal_anchor: "scope §5 #1 (b)"
+  rationale: >
+    Acceptance criterion #1 sub-criterion (b). A class declared with only
+    `a owl:Class` and no logical commitment does not count as axiomatized.
+    None-form: classes lacking any rdfs:subClassOf, owl:equivalentClass,
+    or restriction triple — must be empty.
+
+- id: CQ-003
+  question: "Are there any ex:* classes lacking a jio:derivedFrom annotation citing a JP doctrine source?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:CombatAssessmentProcess"
+    - "ex:BattleDamageAssessmentProcess"
+    - "ex:Phase1BattleDamageAssessment"
+    - "ex:Phase2BattleDamageAssessment"
+    - "ex:Phase3BattleDamageAssessment"
+    - "ex:MunitionsEffectivenessAssessment"
+    - "ex:ReAttackRecommendation"
+    - "ex:Target"
+    - "ex:IntelligenceAnalyst"
+    - "ex:TargetAnalyst"
+    - "ex:AnalyticalRole"
+    - "ex:TargetAnalysisRole"
+    - "ex:IntelligenceOperationsCenter"
+    - "ex:MilitaryFacility"
+    - "ex:Imagery"
+    - "ex:PostStrikeImagery"
+    - "ex:GeospatialAnalysisReport"
+    - "ex:Phase1BDAReport"
+    - "ex:Phase2BDAReport"
+    - "ex:Phase3BDAReport"
+    - "ex:MEAReport"
+    - "ex:RARReport"
+    - "ex:IntelligenceProduct"
+    - "ex:GEOINTProduct"
+    - "ex:Report"
+  doctrinal_anchor: "ADR-001 (jio:derivedFrom selection); scope §5 #9; §5 #1 (c)"
+  rationale: >
+    Acceptance criteria #9 + #1 sub-criterion (c). Doctrinal traceability
+    requires every ex:* class carry a jio:derivedFrom annotation per
+    ADR-001's Option B selection. None-form: classes without the
+    annotation must be empty. Enumeration mirrors CQ-001 (full v1.0 ex:*
+    class set) so that a class could not silently ship without
+    jio:derivedFrom and escape detection. Pairs naturally with Tester's
+    JI-004c relation-mapping coverage probe.
+
+# ============================================================================
+# Criterion #2 — 5 temporal orderings
+# ============================================================================
+
+- id: CQ-004
+  question: "Does Phase I BDA precede Phase II BDA in the canonical CA scenario?"
+  expected_form: boolean
+  must_infer:
+    - true
+  must_not_infer: []
+  doctrinal_anchor: "JP 3-60 App C — Phase II FDA consumes Phase I PDA"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Acceptance criterion #2 — base ordering for the BDA sequence. Phase II
+    Functional Damage Assessment requires the Phase I Physical Damage
+    Assessment as its prerequisite analysis. Tests obo:BFO_0000062
+    (preceded by) inference.
+
+    Scoping note (per JI-002 review B-5): CQ-004 through CQ-008 verify
+    A-Box-asserted ordering propagating through BFO_0000063 transitivity in
+    the canonical scenario. T-Box-level ordering inference (e.g., "every
+    Phase2 individual must have some Phase1 predecessor regardless of
+    A-Box") is a different CQ pattern using someValuesFrom semantics on
+    subClassOf — reserved for v1.x. v1.0 acceptance is the canonical-
+    scenario verification.
+
+- id: CQ-005
+  question: "Does Phase II BDA precede Phase III BDA in the canonical CA scenario?"
+  expected_form: boolean
+  must_infer:
+    - true
+  must_not_infer: []
+  doctrinal_anchor: "JP 3-60 App C — Phase III TSA depends on Phase II FDA"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Acceptance criterion #2. Phase III Target System Assessment evaluates
+    the broader system effect; it depends on Phase II's functional analysis
+    of the individual target. Combined with CQ-004, BFO_0000063
+    transitivity should propagate Phase1→Phase2→Phase3.
+
+- id: CQ-006
+  question: "Does Phase I BDA precede MEA in the canonical CA scenario?"
+  expected_form: boolean
+  must_infer:
+    - true
+  must_not_infer: []
+  doctrinal_anchor: "JP 3-60 App C — MEA consumes physical-damage observations"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Acceptance criterion #2. Munitions Effectiveness Assessment depends on
+    Phase I observations of strike impact (was the weapon delivered to the
+    intended location, did it function as designed) — not on the broader
+    BDA chain. This is a separate ordering branch from Phase1→Phase2→Phase3.
+
+- id: CQ-007
+  question: "Does Phase III BDA precede the Re-Attack Recommendation in the canonical CA scenario?"
+  expected_form: boolean
+  must_infer:
+    - true
+  must_not_infer: []
+  doctrinal_anchor: "JP 3-60 App C — RAR consumes target system assessment"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Acceptance criterion #2 — first half of the conjunctive RAR ordering
+    locked in the JI-001 review (per Onto C-1/C-6, SME doctrinal call).
+    RAR draws on Phase III Target System Assessment to know whether the
+    broader operational effect was achieved.
+
+- id: CQ-008
+  question: "Does MEA precede the Re-Attack Recommendation in the canonical CA scenario?"
+  expected_form: boolean
+  must_infer:
+    - true
+  must_not_infer: []
+  doctrinal_anchor: "JP 3-60 App C — RAR consumes munitions effectiveness data"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Acceptance criterion #2 — second half of the conjunctive RAR ordering.
+    Both CQ-007 AND CQ-008 must hold; failing either means the RAR axiom
+    is missing one of its conjunctive predecessors. RAR draws on MEA to
+    know whether the weapon performed as expected — a re-attack
+    recommendation that hadn't considered both inputs would be doctrinally
+    unsound.
+
+# ============================================================================
+# Criterion #3 — has_input / has_output behavior (positive + negative)
+# ============================================================================
+
+- id: CQ-009
+  question: "Does a process individual instantiated with all required inputs and outputs of Phase I BDA classify as Phase1BattleDamageAssessment?"
+  expected_form: boolean
+  must_infer:
+    - true
+  must_not_infer: []
+  doctrinal_anchor: "scope §5 #3 — positive classification case"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Acceptance criterion #3 positive case. A correctly-instantiated process
+    individual with all required inputs (a sensor product) and outputs
+    (Phase1BDAReport) classifies as the expected sub-class. SME doctrinal
+    call (per JI-002 review B-2 / Onto Option α): the five CA leaf process
+    classes (Phase1BDA, Phase2BDA, Phase3BDA, MEA, RAR) are defined classes
+    via owl:equivalentClass — necessary AND sufficient conditions — so an
+    untyped process individual with the right I/O is classified into the
+    leaf class by the reasoner. Encoding choice within that constraint
+    (someValuesFrom restrictions inside the equivalentClass body, closure
+    axioms, property chains) remains Onto's lane per workflow §5. This
+    validates inferential behavior, not encoding form.
+
+- id: CQ-010
+  question: "Are any process individuals lacking required inputs/outputs inferred as Combat Assessment sub-classes?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:Phase1BattleDamageAssessment"
+    - "ex:Phase2BattleDamageAssessment"
+    - "ex:Phase3BattleDamageAssessment"
+    - "ex:MunitionsEffectivenessAssessment"
+    - "ex:ReAttackRecommendation"
+  doctrinal_anchor: "scope §5 #3 — negative case via underconstraint_test"
+  scenario_ref: "tests/fixtures/adversarial/underconstraint_test/fixture.jsonld"
+  rationale: >
+    Acceptance criterion #3 negative case. A bare BFO_0000015 individual
+    without inputs/outputs must not be inferred into any CA sub-class.
+    Pairs symmetrically with CQ-009 under defined-class encoding (Option α
+    per JI-002 review B-2): if the leaf classes are owl:equivalentClass
+    definitions, then absence of the required I/O denies classification —
+    the negative case is the contrapositive of the positive. Pairs with
+    Tester's underconstraint_test adversarial probe. Catches the "every
+    Process is a BDA" overgeneration failure mode.
+
+# ============================================================================
+# Criterion #4 — ICE ≢ Process
+# ============================================================================
+
+- id: CQ-011
+  question: "Are any Information Content Entities (Reports, Imagery) inferred as Processes?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:Phase1BDAReport"
+    - "ex:Phase2BDAReport"
+    - "ex:Phase3BDAReport"
+    - "ex:MEAReport"
+    - "ex:RARReport"
+    - "ex:Imagery"
+    - "ex:PostStrikeImagery"
+  doctrinal_anchor: "scope §5 #4 — ICE/Process disjointness via BFO continuant/occurrent partition"
+  scenario_ref: "tests/fixtures/adversarial/ice_confusion_test/fixture.jsonld"
+  rationale: >
+    Acceptance criterion #4. IAO_0000030 ⊓ BFO_0000015 ⊑ ⊥ from BFO's
+    continuant/occurrent disjointness — the inference must be confirmed
+    structurally. Any ICE class inferred under Process is a structural
+    failure of the upper-ontology import chain. Pairs with Tester's
+    ice_confusion_test probe.
+
+# ============================================================================
+# Criterion #5 — anti-rigidity
+# ============================================================================
+
+- id: CQ-012
+  question: "Is any agent classified as TargetAnalyst purely by participation in a BDA process, without bearing a TargetAnalysisRole?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:TargetAnalyst"
+  doctrinal_anchor: "scope §5 #5 — anti-rigidity check"
+  scenario_ref: "tests/fixtures/adversarial/role_stress_test/fixture.jsonld"
+  rationale: >
+    Acceptance criterion #5. Anti-rigidity violation gateway: if class
+    membership in TargetAnalyst is inferable from `obo:BFO_0000056`
+    (participates in) alone — without `obo:RO_0000053` (bearer of) a
+    TargetAnalysisRole — the class is rigidly defined and the model has
+    lost anti-rigidity. The test fixture instantiates an agent who
+    participates in a BDA process but bears no TargetAnalysisRole; the
+    reasoner must NOT classify them as TargetAnalyst. Pairs with
+    role_stress_test probe.
+
+# ============================================================================
+# Cross-cutting CQs (target-as-participant, CA completeness, agent/target distinction)
+# ============================================================================
+
+- id: CQ-013
+  question: "Which entities participate in the canonical Phase I BDA process via obo:BFO_0000057 (has participant)?"
+  expected_form: list
+  must_infer:
+    - "ex:Analyst_Jane_001"
+    - "ex:Target_Bridge_42"
+  must_not_infer:
+    - "ex:Site_CENTCOM_JIOC"
+    - "ex:Role_TargetAnalysis_Jane_001"
+  doctrinal_anchor: "scope §3.5; JP 3-60 — targets are participants, not intentional objects"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Cross-cutting check that has_participant correctly scopes to agents,
+    targets, facilities, and roles distinctly:
+      - Agents (Jane) and targets (Bridge_42) ARE participants — must_infer.
+      - Facilities use occurs_at (not has_participant) — must_not_infer.
+      - Roles use realized_in (not has_participant) — must_not_infer.
+
+    NOTE on ICEs: per CCO encoding (verified in docs/relation-mapping.md
+    §CCO Object Properties), cco:ont00001921 (has_input) and
+    cco:ont00001986 (has_output) are both rdfs:subPropertyOf
+    obo:BFO_0000057 (has_participant). This means ICE inputs and outputs
+    ARE inferred as has_participants of the process by sub-property
+    entailment from the upstream CCO axioms — a fact this CQ does not
+    contest. The narrow doctrinal participation distinction (agent/target
+    vs ICE) lives in the specific property used (has_input/has_output vs
+    has_participant directly), not in exclusion at the super-property
+    level. See JI-002 review B-1 / Onto Fix-A for the rationale.
+
+    Instance IRIs are placeholder forward references to JI-005's
+    canonical scenario; if Onto chooses different IRIs during
+    IRI-fication, this CQ updates to match.
+
+- id: CQ-014
+  question: "How many distinct Combat Assessment sub-processes are part_of the canonical Combat Assessment scenario instance?"
+  expected_form: count
+  must_infer:
+    - 5
+  must_not_infer:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  doctrinal_anchor: "scope §3.1 — full CA stack: BDA Phases I/II/III + MEA + RAR"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    CA-completeness check. The canonical scenario must exercise the full
+    five-sub-process CA stack via cco:ont00001857 (is part of process).
+    Count form catches both under-population (0–4 — the v0 plan's CA-as-
+    BDA-only truncation, which JI-001 corrected) and over-population (>5).
+    This CQ is the structural counter to the doctrinal error JI-001 fixed.
+
+- id: CQ-015
+  question: "Is the Target_Bridge_42 instance ever inferred as an Agent, Analyst, or Person?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:IntelligenceAnalyst"
+    - "ex:TargetAnalyst"
+    - "cco:ont00001262"
+  doctrinal_anchor: "scope §3.5 — Target ⊑ MaterialEntity, distinct from Agent classes"
+  scenario_ref: "src/instances/JI-005-canonical-ca.jsonld"
+  rationale: >
+    Catches agent/target conflation. A Target participates in BDA processes
+    (has_participant) alongside the Analyst, but is materially distinct
+    from the Person/Analyst bearing analytical roles. Counter to the SME
+    persona's flagged concern (config/SME.yaml lines 36-38) about
+    "has_object" intentionality leaking into target relations and
+    confusing target identity with agent identity. Reinforces the use of
+    has_participant over intentional has_object across the model.
