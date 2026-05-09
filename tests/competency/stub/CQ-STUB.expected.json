@@ -1,0 +1,6 @@
+{
+  "id": "CQ-STUB",
+  "expected_form": "boolean",
+  "must_infer": [true],
+  "must_not_infer": []
+}

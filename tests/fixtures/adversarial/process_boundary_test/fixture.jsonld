@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "obo": "http://purl.obolibrary.org/obo/",
+    "cco": "https://www.commoncoreontologies.org/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "http://example.org/jp2/",
+    "cco:ont00001857": { "@type": "@id" }
+  },
+  "@graph": [
+    {
+      "@id": "ex:Process_CombatAssessment_BoundaryProbe",
+      "@type": ["ex:CombatAssessmentProcess", "owl:NamedIndividual"],
+      "rdfs:label": "Parent Combat Assessment (boundary probe)"
+    },
+    {
+      "@id": "ex:Process_Phase1_BoundaryProbe",
+      "@type": ["ex:Phase1BattleDamageAssessment", "owl:NamedIndividual"],
+      "rdfs:label": "Phase I BDA (boundary probe)",
+      "rdfs:comment": "Distinct from Phase II. Must remain a different individual under reasoning.",
+      "cco:ont00001857": { "@id": "ex:Process_CombatAssessment_BoundaryProbe" }
+    },
+    {
+      "@id": "ex:Process_Phase2_BoundaryProbe",
+      "@type": ["ex:Phase2BattleDamageAssessment", "owl:NamedIndividual"],
+      "rdfs:label": "Phase II BDA (boundary probe)",
+      "rdfs:comment": "Distinct from Phase I. Must remain a different individual under reasoning.",
+      "cco:ont00001857": { "@id": "ex:Process_CombatAssessment_BoundaryProbe" }
+    }
+  ]
+}

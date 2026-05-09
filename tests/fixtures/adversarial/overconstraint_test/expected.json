@@ -1,0 +1,18 @@
+{
+  "test_id": "overconstraint_test",
+  "fixture": "tests/fixtures/adversarial/overconstraint_test/fixture.jsonld",
+  "probe_source": "config/logic_ontologist_tester.yaml#adversarial_tests.overconstraint_test",
+  "must_surface": [
+    {
+      "kind": "consistent",
+      "rationale": "The fixture is a well-formed Phase I BDA. The merged T-Box + fixture must be consistent. If reasoner reports inconsistency or the individual is unsatisfiable, the T-Box has overconstrained Phase1BattleDamageAssessment — eliminating valid real-world instances."
+    },
+    {
+      "kind": "type_inference",
+      "individual": "ex:Process_OverProbe_OK",
+      "type": "ex:Phase1BattleDamageAssessment",
+      "rationale": "Asserted directly. Once JI-005 introduces EquivalentTo definitions for Phase1BDA, this expectation extends to from-properties classification (drop the asserted type, expect inference from inputs/outputs/participants)."
+    }
+  ],
+  "must_not_surface": []
+}

@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "obo": "http://purl.obolibrary.org/obo/",
+    "cco": "https://www.commoncoreontologies.org/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "http://example.org/jp2/",
+    "cco:ont00001986": { "@type": "@id" }
+  },
+  "@graph": [
+    {
+      "@id": "ex:ICE_Imagery_ConfusionProbe",
+      "@type": ["ex:PostStrikeImagery", "owl:NamedIndividual"],
+      "rdfs:label": "Probe imagery ICE",
+      "rdfs:comment": "An ICE used as has_output of a process. Must NOT be inferred as Process (BFO_0000015) or Person (cco:ont00001262) under any property chain."
+    },
+    {
+      "@id": "ex:Process_Hosting_ConfusionProbe",
+      "@type": ["ex:Phase1BattleDamageAssessment", "owl:NamedIndividual"],
+      "rdfs:label": "Hosting process for ICE confusion test",
+      "cco:ont00001986": { "@id": "ex:ICE_Imagery_ConfusionProbe" }
+    }
+  ]
+}
