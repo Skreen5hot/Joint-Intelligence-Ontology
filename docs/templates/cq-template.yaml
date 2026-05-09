@@ -1,0 +1,134 @@
+# Competency Question (CQ) Template — Workflow v1.0
+#
+# Owner of this template: Logic Ontologist Tester (JI-002a)
+# Owner of authored CQs:  Joint Intelligence SME (per JI-002 and downstream)
+# Consumer:               Logic Tester translates each CQ into SPARQL/DL-Query
+#                         under tests/competency/ and runs it in CI.
+#
+# CONTRACT
+# --------
+# Every CQ MUST provide both must_infer AND must_not_infer.
+# A CQ with positive expectations only is incomplete — brittleness
+# (over/under-constraint, ICE-confusion, role rigidity) is detected by
+# negative expectations. This is the SME's contribution to adversarial
+# testing without crossing into the Tester's lane.
+#
+# FILE LAYOUT
+# -----------
+# CQs for a module live at:   docs/scenarios/JI-###-cqs.yaml
+# They are evaluated against: src/instances/JI-###.jsonld (default scenario)
+#                             unless `scenario_ref` overrides per CQ.
+#
+# FIELDS
+# ------
+# id              REQUIRED  string   Format: "CQ-NNN" zero-padded, unique within module.
+# question        REQUIRED  string   Single natural-language sentence. No IRIs in the prose.
+# expected_form   REQUIRED  enum     One of: list | single | boolean | count | none
+#                                      list    = unordered set of IRIs
+#                                      single  = exactly one IRI
+#                                      boolean = ASK-style true/false
+#                                      count   = integer cardinality
+#                                      none    = must return empty (pure brittleness CQ)
+# must_infer      REQUIRED  array    IRIs / values the answer MUST contain.
+#                                    For boolean: [true] or [false]
+#                                    For count:   [N]
+#                                    For none:    []  (intentionally empty)
+# must_not_infer  REQUIRED  array    IRIs / classes the answer MUST NOT contain.
+#                                    Use class IRIs to forbid type-membership inferences
+#                                    (e.g., "no Imagery instance shall be inferred as Process").
+# doctrinal_anchor REQUIRED string   Doctrine citation. Format: "JP 2-0 §IV-12" or
+#                                    "JP 3-60 ch.3 ¶7". Required for PM tiebreak basis.
+# scenario_ref    OPTIONAL  string   Path to A-Box this CQ runs against. Defaults to the
+#                                    module's primary scenario (src/instances/JI-###.jsonld).
+# rationale       OPTIONAL  string   One-line "why this matters operationally" — helps
+#                                    Tester preserve SME intent during translation.
+#
+# VALIDATION (enforced in CI by JI-004a)
+# --------------------------------------
+# - id matches /^CQ-\d{3}$/ and is unique within the file.
+# - expected_form is one of the five enum values.
+# - must_infer and must_not_infer are both present (may be empty arrays for `none` form).
+# - doctrinal_anchor is non-empty.
+# - All IRIs in must_infer / must_not_infer resolve in the merged ontology
+#   (after AXIOMATIZED→REASONED smoke-clean gate has passed).
+#
+# ============================================================================
+# WORKED EXAMPLES
+# ============================================================================
+
+# Example 1 — list form (positive participation inference)
+- id: CQ-001
+  question: "Which analysts participate in Phase I BDA for Bridge 42?"
+  expected_form: list
+  must_infer:
+    - "ex:Analyst_Jane_001"
+  must_not_infer:
+    - "ex:Site_CENTCOM_JIOC"        # facility, not an analyst
+    - "ex:Target_Bridge_42"          # material entity, not an analyst
+    - "ex:ICE_UAV_Imagery_2026"      # ICE, not an analyst
+  doctrinal_anchor: "JP 2-0 §IV-12"
+  rationale: >
+    Confirms participates_in is correctly scoped to agents, not all entities
+    associated with the process. Catches has_participant overgeneration.
+
+# Example 2 — single form (input-of-next-phase chaining)
+- id: CQ-002
+  question: "What is the input report consumed by Phase II BDA for Bridge 42?"
+  expected_form: single
+  must_infer:
+    - "ex:ICE_Phase1_Report_001"
+  must_not_infer:
+    - "ex:ICE_UAV_Imagery_2026"      # was Phase I input, not Phase II input
+  doctrinal_anchor: "JP 3-60 ch.5 ¶3"
+  rationale: >
+    Phase II BDA must consume Phase I output. Verifies the has_output ∘ has_input
+    chain holds without collapsing the two phases.
+
+# Example 3 — boolean form (temporal ordering)
+- id: CQ-003
+  question: "Does Phase I BDA precede Phase II BDA for Bridge 42?"
+  expected_form: boolean
+  must_infer:
+    - true
+  must_not_infer: []
+  doctrinal_anchor: "JP 3-60 ch.5 ¶2"
+
+# Example 4 — count form (cardinality of role realization)
+- id: CQ-004
+  question: "How many distinct OccupationRoles does Analyst Jane bear in this scenario?"
+  expected_form: count
+  must_infer:
+    - 1
+  must_not_infer:
+    - 0   # role realization gap would produce 0
+    - 2   # accidental duplication of role individuals would produce 2
+  doctrinal_anchor: "JP 2-0 §III-9"
+  rationale: >
+    Anti-rigidity check. If Jane is modeled as essentially a TargetAnalyst
+    (rigid type), this query may return 0 because no realizable role exists.
+
+# Example 5 — none form (pure brittleness CQ — ICE confusion test)
+- id: CQ-005
+  question: "Are any Information Content Entities inferred as Processes?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:ICE_UAV_Imagery_2026"
+    - "ex:ICE_Phase1_Report_001"
+  doctrinal_anchor: "JP 2-0 §I-4 (ICE separation principle)"
+  rationale: >
+    No ICE shall be inferred as obo:BFO_0000015 (Process) under any property
+    chain. Direct counterpart to the Tester's ice_confusion_test probe.
+
+# Example 6 — none form (role-rigidity brittleness)
+- id: CQ-006
+  question: "Are any agents classified as TargetAnalyst purely by participation, without bearing a TargetAnalysisRole?"
+  expected_form: none
+  must_infer: []
+  must_not_infer:
+    - "ex:Analyst_Jane_001"          # placeholder; any agent matching the bad pattern
+  doctrinal_anchor: "JP 2-0 §III-9 (role realization)"
+  rationale: >
+    Counterpart to role_stress_test. If membership in TargetAnalyst is
+    inferable from participates_in alone, the class is rigidly defined and
+    the model has lost anti-rigidity.

@@ -1,0 +1,20 @@
+{
+  "test_id": "ice_confusion_test",
+  "fixture": "tests/fixtures/adversarial/ice_confusion_test/fixture.jsonld",
+  "probe_source": "config/logic_ontologist_tester.yaml#adversarial_tests.ice_confusion_test",
+  "must_surface": [],
+  "must_not_surface": [
+    {
+      "kind": "type_inference",
+      "individual": "ex:ICE_Imagery_ConfusionProbe",
+      "type": "obo:BFO_0000015",
+      "rationale": "ICE is a generically dependent continuant; it cannot be a Process (occurrent). If this fires, has_output's range or domain has leaked process semantics into ICE."
+    },
+    {
+      "kind": "type_inference",
+      "individual": "ex:ICE_Imagery_ConfusionProbe",
+      "type": "cco:ont00001262",
+      "rationale": "ICE is not a Person. If this fires, an agent property chain has wrongly absorbed an artifact."
+    }
+  ]
+}

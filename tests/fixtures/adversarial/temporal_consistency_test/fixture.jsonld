@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "obo": "http://purl.obolibrary.org/obo/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "http://example.org/jp2/",
+    "obo:BFO_0000063": { "@type": "@id" }
+  },
+  "@graph": [
+    {
+      "@id": "ex:Process_Cycle_A",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "rdfs:label": "Process A (in temporal cycle)",
+      "rdfs:comment": "A precedes B AND B precedes A. With BFO precedes transitive + irreflexive, this should yield inconsistency. If reasoner does not detect, the loaded T-Box is missing irreflexivity on BFO_0000063.",
+      "obo:BFO_0000063": { "@id": "ex:Process_Cycle_B" }
+    },
+    {
+      "@id": "ex:Process_Cycle_B",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "rdfs:label": "Process B (in temporal cycle)",
+      "obo:BFO_0000063": { "@id": "ex:Process_Cycle_A" }
+    }
+  ]
+}

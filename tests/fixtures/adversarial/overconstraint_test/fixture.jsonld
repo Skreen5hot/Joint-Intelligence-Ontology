@@ -1,0 +1,46 @@
+{
+  "@context": {
+    "obo": "http://purl.obolibrary.org/obo/",
+    "cco": "https://www.commoncoreontologies.org/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "http://example.org/jp2/",
+    "obo:BFO_0000057": { "@type": "@id" },
+    "cco:ont00001921": { "@type": "@id" },
+    "cco:ont00001986": { "@type": "@id" }
+  },
+  "@graph": [
+    {
+      "@id": "ex:Process_OverProbe_OK",
+      "@type": ["ex:Phase1BattleDamageAssessment", "owl:NamedIndividual"],
+      "rdfs:label": "Well-formed Phase I BDA (overconstraint probe)",
+      "rdfs:comment": "Has all expected inputs, outputs, and participants per JP 3-60. Should classify cleanly. If T-Box restrictions block this fixture, the model is overconstrained — eliminating valid real-world Phase I BDA instances.",
+      "cco:ont00001921": { "@id": "ex:ICE_OverProbe_Imagery" },
+      "cco:ont00001986": { "@id": "ex:ICE_OverProbe_Report" },
+      "obo:BFO_0000057": [
+        { "@id": "ex:Agent_OverProbe_Analyst" },
+        { "@id": "ex:Target_OverProbe" }
+      ]
+    },
+    {
+      "@id": "ex:ICE_OverProbe_Imagery",
+      "@type": ["ex:PostStrikeImagery", "owl:NamedIndividual"],
+      "rdfs:label": "Probe imagery input"
+    },
+    {
+      "@id": "ex:ICE_OverProbe_Report",
+      "@type": ["ex:Phase1BDAReport", "owl:NamedIndividual"],
+      "rdfs:label": "Probe Phase I report output"
+    },
+    {
+      "@id": "ex:Agent_OverProbe_Analyst",
+      "@type": ["ex:TargetAnalyst", "owl:NamedIndividual"],
+      "rdfs:label": "Probe target analyst"
+    },
+    {
+      "@id": "ex:Target_OverProbe",
+      "@type": ["ex:Target", "owl:NamedIndividual"],
+      "rdfs:label": "Probe target"
+    }
+  ]
+}

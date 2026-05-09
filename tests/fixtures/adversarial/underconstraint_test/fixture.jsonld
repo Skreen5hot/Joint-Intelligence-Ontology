@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "obo": "http://purl.obolibrary.org/obo/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "http://example.org/jp2/"
+  },
+  "@graph": [
+    {
+      "@id": "ex:Process_UnderProbe_Empty",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "rdfs:label": "Generic process with no inputs, outputs, or participants",
+      "rdfs:comment": "Bare BFO Process individual. Has none of the doctrinal markers of a Phase I BDA (no imagery input, no report output, no analyst, no target). Must NOT be inferred as ex:Phase1BattleDamageAssessment. If it is, the Phase1BDA class definition is too loose."
+    }
+  ]
+}

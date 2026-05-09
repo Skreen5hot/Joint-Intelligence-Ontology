@@ -1,0 +1,12 @@
+{
+  "test_id": "temporal_consistency_test",
+  "fixture": "tests/fixtures/adversarial/temporal_consistency_test/fixture.jsonld",
+  "probe_source": "config/logic_ontologist_tester.yaml#adversarial_tests.temporal_consistency_test",
+  "must_surface": [
+    {
+      "kind": "inconsistency_or_unsat",
+      "rationale": "BFO precedes (BFO_0000063) is transitive. A cycle (A precedes B, B precedes A) implies A precedes A, which under irreflexivity is inconsistent. If the reasoner returns clean, the loaded T-Box is missing IrreflexiveProperty on BFO_0000063 — surface as a Tester finding to Onto and consider a probe T-Box delta at tests/fixtures/probes/temporal_consistency_test.ttl asserting irreflexivity."
+    }
+  ],
+  "must_not_surface": []
+}

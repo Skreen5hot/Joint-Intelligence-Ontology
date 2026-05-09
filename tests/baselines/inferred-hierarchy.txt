@@ -1,0 +1,3 @@
+# Inferred subClassOf hierarchy — regenerated on each merge to main.
+# Format: one line per "<child IRI> <SUB> <parent IRI>" pair, sorted lexicographically.
+# Phase 0 placeholder. First real entry lands when JI-003 ships the canonical T-Box.

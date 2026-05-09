@@ -1,0 +1,20 @@
+{
+  "test_id": "underconstraint_test",
+  "fixture": "tests/fixtures/adversarial/underconstraint_test/fixture.jsonld",
+  "probe_source": "config/logic_ontologist_tester.yaml#adversarial_tests.underconstraint_test",
+  "must_surface": [],
+  "must_not_surface": [
+    {
+      "kind": "type_inference",
+      "individual": "ex:Process_UnderProbe_Empty",
+      "type": "ex:Phase1BattleDamageAssessment",
+      "rationale": "An empty BFO Process with no inputs, outputs, or participants must not satisfy the Phase I BDA EquivalentTo definition. If this inference fires once JI-005 ships restrictions, the definition is under-constrained — admitting any process as a BDA."
+    },
+    {
+      "kind": "type_inference",
+      "individual": "ex:Process_UnderProbe_Empty",
+      "type": "ex:CombatAssessmentProcess",
+      "rationale": "Same brittleness check, one level up the hierarchy."
+    }
+  ]
+}
