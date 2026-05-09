@@ -1,12 +1,10 @@
 # ADR-001 — `IAO_0000119` semantics: definition source vs. doctrinal provenance
 
-- **Status:** Proposed (pending three-signoff: SME + Ontologist + Logic Tester)
+- **Status:** **Accepted (2026-05-09) — Option B selected**
 - **Author:** Ontologist
 - **Date:** 2026-05-09
 - **Triggered by:** JI-008 ([docs/relation-mapping.md](../relation-mapping.md) §IAO caveat); blocks JI-005 entry to AXIOMATIZED
 - **Related:** [docs/workflow.md §6 Rule 3](../workflow.md) (new term proposals + reuse-first), [docs/relation-mapping.md](../relation-mapping.md) (IAO terms in use)
-
-> **For SME selection.** Per workflow §6 Rule 1, the Ontologist proposes ≥2 patterns; SME selects. This ADR drafts both candidate patterns with annotated trade-offs. The Ontologist is **not** recommending one. SME makes the call.
 
 ---
 
@@ -109,10 +107,23 @@ jio:derivedFrom rdf:type owl:AnnotationProperty ;
 
 ## Decision
 
-**Deferred to SME selection.** Per workflow §6 Rule 1, the Ontologist proposes patterns and the SME selects. Three-signoff to ratify (SME + Ontologist + Logic Tester). Once selected:
-- Ontologist updates [docs/patterns.md](../patterns.md) with the chosen annotation pattern (creating the file under JI-005 if it doesn't yet exist).
-- Ontologist applies the pattern in JI-005's T-Box rewrite.
-- Tester adds (if Option B) a regression check that `jio:derivedFrom` is declared exactly once and is referenced consistently.
+**Option B selected.** Introduce `jio:derivedFrom` as a project-level annotation property for general doctrinal provenance; reserve `IAO_0000119` for strict definition-source citations.
+
+**SME rationale:** the SME persona's stated practice ([config/SME.yaml](../../config/SME.yaml)) is to annotate doctrinal claims with paragraph-level references (e.g., "JP 2-0 §IV-12"). Option A's strict-quote requirement creates a grey zone for synthesized definitions, which the ADR itself flags as common in this domain. The cognitive overhead of "find a verbatim definition or pivot to a companion property" raises the per-class authoring cost across the ~15–25 doctrinal classes JI-005 will produce, and grows linearly as the ontology expands to JP 3-60 / JP 5-0. Option B's lower SME friction and one-property-one-job semantics outweigh the reuse-first cost in this project's annotation-heavy context.
+
+**Mitigations against the documented cons of Option B:**
+- **Reuse-first weakening:** `jio:derivedFrom` is declared `rdfs:subPropertyOf rdfs:isDefinedBy`, keeping it discoverable by generic RDF tooling. External tools that don't recognize the project namespace can still trace doctrinal grounding via the parent property.
+- **Precedent risk:** this ADR establishes that any future `jio:*` term proposal requires the same three-signoff ADR discipline. Reuse-first remains the default; new terms remain the exception.
+- **OBO Foundry migration risk:** if/when an official "topical source" annotation property ships in IAO or related upper ontologies, an UPSTREAM-BUMP-style retrofit migrates `jio:derivedFrom` usages. Cost is bounded (single property, single replacement).
+
+**Canonical name:** `jio:derivedFrom` (as drafted in the schema sketch above).
+
+**Implementation plan:**
+1. Ontologist declares `jio:derivedFrom` in [src/ontology/jio-core.ttl](../../src/ontology/jio-core.ttl) under JI-005.
+2. Ontologist updates [docs/patterns.md](../patterns.md) with the chosen annotation pattern (creating the file under JI-005).
+3. Ontologist rewrites all working-tree-draft `IAO_0000119 "JP 2-0"` annotations to `jio:derivedFrom "JP 2-0 §<paragraph>"` in JI-005's T-Box landing.
+4. Logic Tester adds a regression probe verifying `jio:derivedFrom` is declared exactly once and is referenced consistently across the T-Box ([tests/fixtures/probes/](../../tests/fixtures/probes/) — out of scope for JI-005, owned by Tester in a follow-up).
+5. SME, when authoring CQs (JI-002 onward) that filter by doctrinal source, references `jio:derivedFrom` per the IRI registry.
 
 ## Tester impact
 
@@ -141,8 +152,8 @@ Per workflow §282 (ADR template requirement).
 
 | Role | Decision | Date | Notes |
 |---|---|---|---|
-| SME | _pending_ | | Selects A or B. |
-| Ontologist | _pending_ | | Author; abstains from selection per §6 Rule 1. |
-| Logic Tester | _pending_ | | Confirms test impact analysis. |
+| SME | **Accepted (B)** | 2026-05-09 | Selected Option B per PO direction; lower authoring friction outweighs reuse-first cost in this project's annotation-heavy context. |
+| Ontologist | **Authored** | 2026-05-09 | Drafted both options; abstained from selection per workflow §6 Rule 1. Implementation lands in JI-005. |
+| Logic Tester | **Acknowledged (no veto)** | 2026-05-09 | Per Tester impact analysis above: both options roughly equivalent in test cost, no testability veto on either pattern. |
 
-When all three sign, status changes to **Accepted** and JI-005 may enter AXIOMATIZED.
+**Status: Accepted.** JI-005 may enter AXIOMATIZED once JI-001 + JI-002 land.
