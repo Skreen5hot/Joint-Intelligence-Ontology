@@ -12,6 +12,6 @@
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <uri name="http://purl.obolibrary.org/obo/bfo.owl" uri="bfo-core.ttl"/>
     <uri name="http://purl.obolibrary.org/obo/ro.owl"  uri="ro.owl"/>
-    <uri name="http://purl.obolibrary.org/obo/iao.owl" uri="iao-edit.owl"/>
+    <uri name="http://purl.obolibrary.org/obo/iao.owl" uri="iao.owl"/>
     <uri name="https://www.commoncoreontologies.org/CommonCoreOntologiesMerged" uri="CommonCoreOntologiesMerged.ttl"/>
 </catalog>

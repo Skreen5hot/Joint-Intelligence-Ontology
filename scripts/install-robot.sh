@@ -13,7 +13,7 @@ URL="https://github.com/ontodev/robot/releases/download/v${ROBOT_VERSION}/robot.
 mkdir -p "${CACHE_DIR}"
 
 if [[ ! -f "${JAR_PATH}" ]]; then
-  echo "Downloading ROBOT v${ROBOT_VERSION} from ${URL}"
+  echo "Downloading ROBOT v${ROBOT_VERSION} from ${URL}" >&2
   curl -fsSL "${URL}" -o "${JAR_PATH}"
 fi
 
