@@ -20,6 +20,11 @@ Per Workflow v1.0 §7. Gates are ordered: each step's failure prevents subsequen
 |---|---|---|---|
 | W1 | Inferred-hierarchy diff | > 5 lines changed vs `tests/baselines/inferred-hierarchy.txt` | `diff` |
 | W2 | Reasoner runtime regression | > 2× median of last 10 runs | `scripts/runtime-tracker.sh` |
+| W3 | Relation-mapping coverage | Any external IRI in `src/ontology/**/*.ttl` (BFO/CCO/IAO/RO namespaces) not present in `docs/relation-mapping.md` | `scripts/check-relation-mapping.py` |
+
+### W3 promotion path
+
+W3 is **warning by default** because the failure mode "IRI exists but isn't documented" is a documentation gap, not a model bug — it should not block a model PR while the registry catches up. Promotion to **blocking** is ADR-overridable per workflow §6 Rule 4 once the registry matures (post-JI-005 once Onto's IRI registry has a steady set of canonical terms and drift becomes the exception, not the norm). Promotion ADR template requirement: state the registry-stability evidence (e.g., "no new terms added in last N tickets") that justifies the gate-tier change.
 
 ## Validation Timing
 
@@ -42,3 +47,4 @@ Inserted between AXIOMATIZED and the Tester queue (Workflow v1.0 §2). SMOKE-CLE
 | B7 | Stub-active. Six fixtures present from JI-004b; per-fixture verdict against `expected.json` activates once `JIO_TBOX` points to a real T-Box (post-JI-003 + JI-005). |
 | W1 | Active (initial baseline = empty) |
 | W2 | Active (rolling window populated as runs accumulate; needs ≥ 3 prior runs before checks fire) |
+| W3 | Active against current `src/ontology/jio-core.ttl` stub (4 import IRIs, all covered by `docs/relation-mapping.md`). Activates on every `src/ontology/` change; warning surfaces uncovered IRIs in PR comment. |

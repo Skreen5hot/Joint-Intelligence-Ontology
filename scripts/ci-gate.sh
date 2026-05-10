@@ -226,6 +226,12 @@ run_warning "W2 Reasoner runtime regression" gate_w2
 # Record this run regardless of pass/fail so the baseline reflects reality.
 bash scripts/runtime-tracker.sh RECORD "${TOTAL_RUNTIME}" >/dev/null || true
 
+# ---- W3: Relation-mapping coverage -----------------------------------------
+gate_w3() {
+  python3 scripts/check-relation-mapping.py
+}
+run_warning "W3 Relation-mapping coverage" gate_w3
+
 # ---- Summary -----------------------------------------------------------------
 echo
 echo "=================================================================="
