@@ -1,0 +1,262 @@
+{
+  "@context": {
+    "ex":   "http://example.org/jp2/",
+    "obo":  "http://purl.obolibrary.org/obo/",
+    "cco":  "https://www.commoncoreontologies.org/",
+    "owl":  "http://www.w3.org/2002/07/owl#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd":  "http://www.w3.org/2001/XMLSchema#",
+    "label":   "rdfs:label",
+    "comment": "rdfs:comment",
+    "obo:BFO_0000054": { "@type": "@id" },
+    "obo:BFO_0000056": { "@type": "@id" },
+    "obo:BFO_0000057": { "@type": "@id" },
+    "obo:BFO_0000062": { "@type": "@id" },
+    "obo:BFO_0000063": { "@type": "@id" },
+    "obo:RO_0000053":  { "@type": "@id" },
+    "cco:ont00001857": { "@type": "@id" },
+    "cco:ont00001918": { "@type": "@id" },
+    "cco:ont00001921": { "@type": "@id" },
+    "cco:ont00001986": { "@type": "@id" }
+  },
+  "@graph": [
+
+    {
+      "comment": "=== AGENTS & ROLES ===  Jane typed only as Person (cco:ont00001262) per JI-005a Q-O-3 / Onto Observation A from PR #10 review. Reasoner classifies her as TargetAnalyst (and thus IntelligenceAnalyst by inference) via the bearer-of-some-TargetAnalysisRole pattern. Direct typing as TargetAnalyst would make CQ-012's anti-rigidity test trivially pass."
+    },
+    {
+      "@id": "ex:Analyst_Jane_001",
+      "@type": ["cco:ont00001262", "owl:NamedIndividual"],
+      "label": "Target Analyst Jane (typed as Person; reasoner-classified as TargetAnalyst via role)",
+      "obo:RO_0000053": "ex:Role_TargetAnalysis_Jane_001",
+      "obo:BFO_0000056": [
+        "ex:Process_Phase1BDA_001",
+        "ex:Process_Phase2BDA_001",
+        "ex:Process_Phase3BDA_001",
+        "ex:Process_RAR_001"
+      ]
+    },
+    {
+      "@id": "ex:Role_TargetAnalysis_Jane_001",
+      "@type": ["ex:TargetAnalysisRole", "owl:NamedIndividual"],
+      "label": "Target Analysis Role (Jane) — single role realized across the BDA chain + RAR",
+      "obo:BFO_0000054": [
+        "ex:Process_Phase1BDA_001",
+        "ex:Process_Phase2BDA_001",
+        "ex:Process_Phase3BDA_001",
+        "ex:Process_RAR_001"
+      ]
+    },
+
+    {
+      "comment": "=== MATERIAL ENTITY (Target) ==="
+    },
+    {
+      "@id": "ex:Target_Bridge_42",
+      "@type": ["ex:Target", "owl:NamedIndividual"],
+      "label": "Bridge 42 — road-rail bridge, logistical chokepoint"
+    },
+
+    {
+      "comment": "=== FACILITY (Site) ==="
+    },
+    {
+      "@id": "ex:Site_CENTCOM_JIOC",
+      "@type": ["ex:IntelligenceOperationsCenter", "owl:NamedIndividual"],
+      "label": "USCENTCOM Joint Intelligence Operations Center"
+    },
+
+    {
+      "comment": "=== INFORMATION CONTENT ENTITIES (canonical scenario) ==="
+    },
+    {
+      "@id": "ex:ICE_UAV_Imagery_001",
+      "@type": ["ex:PostStrikeImagery", "owl:NamedIndividual"],
+      "label": "Post-Strike UAV Imagery — Bridge 42, H+2"
+    },
+    {
+      "@id": "ex:ICE_Phase1_Report_001",
+      "@type": ["ex:Phase1BDAReport", "owl:NamedIndividual"],
+      "label": "Phase I BDA Report — Bridge 42 physical damage"
+    },
+    {
+      "@id": "ex:ICE_Phase2_Report_001",
+      "@type": ["ex:Phase2BDAReport", "owl:NamedIndividual"],
+      "label": "Phase II BDA Report — Bridge 42 functional damage"
+    },
+    {
+      "@id": "ex:ICE_Phase3_Report_001",
+      "@type": ["ex:Phase3BDAReport", "owl:NamedIndividual"],
+      "label": "Phase III BDA Report — Bridge 42 target system effect"
+    },
+    {
+      "@id": "ex:ICE_MEA_Report_001",
+      "@type": ["ex:MEAReport", "owl:NamedIndividual"],
+      "label": "MEA Report — PGM weapon effectiveness on Bridge 42"
+    },
+    {
+      "@id": "ex:ICE_RAR_Report_001",
+      "@type": ["ex:RARReport", "owl:NamedIndividual"],
+      "label": "RAR Report — Bridge 42 re-attack recommendation to JFC"
+    },
+
+    {
+      "comment": "=== PROCESSES (canonical scenario) — directly typed as the leaf classes ==="
+    },
+    {
+      "@id": "ex:Process_CombatAssessment_OpAlpha",
+      "@type": ["ex:CombatAssessmentProcess", "owl:NamedIndividual"],
+      "label": "Combat Assessment — Operation Alpha, Bridge 42 cycle",
+      "cco:ont00001918": "ex:Site_CENTCOM_JIOC"
+    },
+    {
+      "@id": "ex:Process_Phase1BDA_001",
+      "@type": ["ex:Phase1BattleDamageAssessment", "owl:NamedIndividual"],
+      "label": "Phase I BDA — Bridge 42",
+      "cco:ont00001857": "ex:Process_CombatAssessment_OpAlpha",
+      "cco:ont00001918": "ex:Site_CENTCOM_JIOC",
+      "cco:ont00001921": "ex:ICE_UAV_Imagery_001",
+      "cco:ont00001986": "ex:ICE_Phase1_Report_001",
+      "obo:BFO_0000057": [
+        "ex:Analyst_Jane_001",
+        "ex:Target_Bridge_42"
+      ]
+    },
+    {
+      "@id": "ex:Process_Phase2BDA_001",
+      "@type": ["ex:Phase2BattleDamageAssessment", "owl:NamedIndividual"],
+      "label": "Phase II BDA — Bridge 42",
+      "cco:ont00001857": "ex:Process_CombatAssessment_OpAlpha",
+      "cco:ont00001918": "ex:Site_CENTCOM_JIOC",
+      "cco:ont00001921": "ex:ICE_Phase1_Report_001",
+      "cco:ont00001986": "ex:ICE_Phase2_Report_001",
+      "obo:BFO_0000057": [
+        "ex:Analyst_Jane_001",
+        "ex:Target_Bridge_42"
+      ],
+      "obo:BFO_0000062": "ex:Process_Phase1BDA_001"
+    },
+    {
+      "@id": "ex:Process_Phase3BDA_001",
+      "@type": ["ex:Phase3BattleDamageAssessment", "owl:NamedIndividual"],
+      "label": "Phase III BDA — Bridge 42 target system assessment",
+      "cco:ont00001857": "ex:Process_CombatAssessment_OpAlpha",
+      "cco:ont00001918": "ex:Site_CENTCOM_JIOC",
+      "cco:ont00001921": "ex:ICE_Phase2_Report_001",
+      "cco:ont00001986": "ex:ICE_Phase3_Report_001",
+      "obo:BFO_0000057": [
+        "ex:Analyst_Jane_001",
+        "ex:Target_Bridge_42"
+      ],
+      "obo:BFO_0000062": "ex:Process_Phase2BDA_001"
+    },
+    {
+      "@id": "ex:Process_MEA_001",
+      "@type": ["ex:MunitionsEffectivenessAssessment", "owl:NamedIndividual"],
+      "label": "MEA — Bridge 42 weapon effectiveness assessment",
+      "comment": "Per JI-005a §3.2 + §5: weapons-effects analyst not modeled by handle in v1.0; MEA's analyst participation is intentionally absent. Bridge_42 also is NOT a participant — MEA assesses weapon performance, not the target.",
+      "cco:ont00001857": "ex:Process_CombatAssessment_OpAlpha",
+      "cco:ont00001918": "ex:Site_CENTCOM_JIOC",
+      "cco:ont00001921": "ex:ICE_UAV_Imagery_001",
+      "cco:ont00001986": "ex:ICE_MEA_Report_001",
+      "obo:BFO_0000062": "ex:Process_Phase1BDA_001"
+    },
+    {
+      "@id": "ex:Process_RAR_001",
+      "@type": ["ex:ReAttackRecommendation", "owl:NamedIndividual"],
+      "label": "RAR — Bridge 42 re-attack recommendation",
+      "comment": "Conjunctive predecessors per JI-001 doctrinal call: preceded_by BOTH Phase3BDA AND MEA, encoded as two separate triples. Conjunctive inputs same way: has_input both Phase3BDAReport and MEAReport. Bridge_42 NOT a participant in RAR per JI-005a §7 (RAR is purely analytical synthesis).",
+      "cco:ont00001857": "ex:Process_CombatAssessment_OpAlpha",
+      "cco:ont00001918": "ex:Site_CENTCOM_JIOC",
+      "cco:ont00001921": [
+        "ex:ICE_Phase3_Report_001",
+        "ex:ICE_MEA_Report_001"
+      ],
+      "cco:ont00001986": "ex:ICE_RAR_Report_001",
+      "obo:BFO_0000057": "ex:Analyst_Jane_001",
+      "obo:BFO_0000062": [
+        "ex:Process_Phase3BDA_001",
+        "ex:Process_MEA_001"
+      ]
+    },
+
+    {
+      "comment": "=== Q-O-3 CLASSIFICATION-TEST INDIVIDUALS ===  Five untyped Process individuals (one per CA leaf class), typed ONLY as obo:BFO_0000015. Each has the input/output signature required by its target leaf's owl:equivalentClass body. The reasoner must classify each into the corresponding leaf class — that's what gives CQ-009 (positive classification) inferential teeth. Without these, CQ-009 reduces to a tautology (testing whether an asserted type is asserted). Test ICEs are separate from canonical-scenario ICEs to keep this test surface fully isolated."
+    },
+    {
+      "@id": "ex:TestICE_Imagery_001",
+      "@type": ["ex:PostStrikeImagery", "owl:NamedIndividual"],
+      "label": "Test ICE — post-strike imagery (input for untyped Phase1 + MEA test individuals)"
+    },
+    {
+      "@id": "ex:TestICE_Phase1Report_001",
+      "@type": ["ex:Phase1BDAReport", "owl:NamedIndividual"],
+      "label": "Test ICE — Phase I BDA Report (output of untyped Phase1; input of untyped Phase2)"
+    },
+    {
+      "@id": "ex:TestICE_Phase2Report_001",
+      "@type": ["ex:Phase2BDAReport", "owl:NamedIndividual"],
+      "label": "Test ICE — Phase II BDA Report"
+    },
+    {
+      "@id": "ex:TestICE_Phase3Report_001",
+      "@type": ["ex:Phase3BDAReport", "owl:NamedIndividual"],
+      "label": "Test ICE — Phase III BDA Report"
+    },
+    {
+      "@id": "ex:TestICE_MEAReport_001",
+      "@type": ["ex:MEAReport", "owl:NamedIndividual"],
+      "label": "Test ICE — MEA Report"
+    },
+    {
+      "@id": "ex:TestICE_RARReport_001",
+      "@type": ["ex:RARReport", "owl:NamedIndividual"],
+      "label": "Test ICE — RAR Report"
+    },
+
+    {
+      "@id": "ex:TestProcess_UntypedPhase1_001",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "label": "Untyped test process — should classify as Phase1BattleDamageAssessment via equivalentClass",
+      "comment": "Q-O-3 classification-test individual #1. Has IntelligenceProduct input (PostStrikeImagery is a subclass) and Phase1BDAReport output. Reasoner must infer ex:Phase1BattleDamageAssessment via the leaf's owl:equivalentClass body.",
+      "cco:ont00001921": "ex:TestICE_Imagery_001",
+      "cco:ont00001986": "ex:TestICE_Phase1Report_001"
+    },
+    {
+      "@id": "ex:TestProcess_UntypedPhase2_001",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "label": "Untyped test process — should classify as Phase2BattleDamageAssessment via equivalentClass",
+      "comment": "Q-O-3 classification-test individual #2.",
+      "cco:ont00001921": "ex:TestICE_Phase1Report_001",
+      "cco:ont00001986": "ex:TestICE_Phase2Report_001"
+    },
+    {
+      "@id": "ex:TestProcess_UntypedPhase3_001",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "label": "Untyped test process — should classify as Phase3BattleDamageAssessment via equivalentClass",
+      "comment": "Q-O-3 classification-test individual #3.",
+      "cco:ont00001921": "ex:TestICE_Phase2Report_001",
+      "cco:ont00001986": "ex:TestICE_Phase3Report_001"
+    },
+    {
+      "@id": "ex:TestProcess_UntypedMEA_001",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "label": "Untyped test process — should classify as MunitionsEffectivenessAssessment via equivalentClass",
+      "comment": "Q-O-3 classification-test individual #4.",
+      "cco:ont00001921": "ex:TestICE_Imagery_001",
+      "cco:ont00001986": "ex:TestICE_MEAReport_001"
+    },
+    {
+      "@id": "ex:TestProcess_UntypedRAR_001",
+      "@type": ["obo:BFO_0000015", "owl:NamedIndividual"],
+      "label": "Untyped test process — should classify as ReAttackRecommendation via equivalentClass",
+      "comment": "Q-O-3 classification-test individual #5. Conjunctive inputs (Phase3BDAReport + MEAReport) per JI-001 doctrinal call. The two has_input triples are required for the reasoner to satisfy RAR's equivalentClass body.",
+      "cco:ont00001921": [
+        "ex:TestICE_Phase3Report_001",
+        "ex:TestICE_MEAReport_001"
+      ],
+      "cco:ont00001986": "ex:TestICE_RARReport_001"
+    }
+
+  ]
+}

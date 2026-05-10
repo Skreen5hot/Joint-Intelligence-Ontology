@@ -1,11 +1,490 @@
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix obo:  <http://purl.obolibrary.org/obo/> .
+@prefix cco:  <https://www.commoncoreontologies.org/> .
+@prefix ex:   <http://example.org/jp2/> .
+@prefix jio:  <http://example.org/jio/> .
+
+### ============================================================ ###
+### ONTOLOGY DECLARATION & IMPORTS                               ###
+### ============================================================ ###
 
 <http://example.org/jp2/jio-core> rdf:type owl:Ontology ;
-    rdfs:label   "JIO Core Ontology — Phase 0 stub" ;
-    rdfs:comment "Phase 0 stub T-Box. Declares ontology IRI and owl:imports only — no doctrinal classes. Exists to exercise the SMOKE-CLEAN B2 gate (imports resolve via catalog) before JI-005 lands canonical doctrinal content. Supersedes tests/stub/jio-stub.ttl as the harness target once JIO_TBOX points here." ;
+    rdfs:label   "JIO Core Ontology (v1.0 — Combat Assessment)" ;
+    rdfs:comment "Joint Intelligence Ontology v1.0. Axiomatizes the full Combat Assessment process per JP 3-60 App C (BDA Phases I/II/III + MEA + RAR), grounded in BFO/CCO/IAO/RO. Scope locked in docs/scope.md; canonical scenario at docs/scenarios/JI-005-canonical-ca.md; competency questions at docs/scenarios/JI-002-cqs.yaml; modeling patterns at docs/patterns.md; doctrinal citations at docs/citations/jp2-0-anchors.md. Defined-class axioms are EL-profile-syntactically valid (equivalentClass + intersectionOf + someValuesFrom) and reason cleanly under ELK (CI's B3 reasoner per PR #16); A-Box consistency (B5) uses HermiT for full DL coverage." ;
     owl:imports <http://purl.obolibrary.org/obo/bfo.owl> ,
                 <http://purl.obolibrary.org/obo/ro.owl> ,
                 <http://purl.obolibrary.org/obo/iao.owl> ,
                 <https://www.commoncoreontologies.org/CommonCoreOntologiesMerged> .
+
+### ============================================================ ###
+### ANNOTATION PROPERTIES                                        ###
+### ============================================================ ###
+
+# jio:derivedFrom — project-level annotation property for general
+# doctrinal provenance (per ADR-001 Option B). IAO_0000119 reserved for
+# strict definition-source citations only. Subordinated to
+# rdfs:isDefinedBy so generic RDF tooling discovers doctrinal grounding.
+# Per docs/citations/jp2-0-anchors.md "Recommended JI-005 annotation
+# pattern", multiple jio:derivedFrom triples on a class are permitted
+# (e.g., a JP 3-60 primary plus a JP 2-0 secondary).
+
+jio:derivedFrom rdf:type owl:AnnotationProperty ;
+    rdfs:subPropertyOf rdfs:isDefinedBy ;
+    rdfs:label "derived from" ;
+    obo:IAO_0000115 "An annotation property linking a class or instance to a doctrinal source (e.g., JP 2-0 §III-7 ¶2.b, JP 3-60 App C ¶12) from which the concept derives. Distinct from obo:IAO_0000119 (definition source), which cites the source of the textual IAO_0000115 definition itself; jio:derivedFrom is for broader doctrinal grounding where the project's IAO_0000115 definition has been synthesized rather than quoted." .
+
+### ============================================================ ###
+### OBJECT PROPERTIES (declared for clarity; canonical defs in    ###
+### upstream BFO/RO/CCO — see docs/relation-mapping.md)           ###
+### ============================================================ ###
+
+obo:BFO_0000054 rdf:type owl:ObjectProperty ;
+    rdfs:label "realized in" .                       # canonical: "has realization"; alt: "realized in"
+
+obo:BFO_0000056 rdf:type owl:ObjectProperty ;
+    rdfs:label "participates in" .
+
+obo:BFO_0000057 rdf:type owl:ObjectProperty ;
+    rdfs:label "has participant" .
+
+obo:BFO_0000062 rdf:type owl:ObjectProperty ;
+    rdfs:label "preceded by" .
+
+obo:BFO_0000063 rdf:type owl:ObjectProperty ;
+    rdfs:label "precedes" .
+
+obo:RO_0000053  rdf:type owl:ObjectProperty ;
+    rdfs:label "bearer of" .
+
+cco:ont00001857 rdf:type owl:ObjectProperty ;
+    rdfs:label "is part of process" .
+
+cco:ont00001918 rdf:type owl:ObjectProperty ;
+    rdfs:label "occurs at" .
+
+cco:ont00001921 rdf:type owl:ObjectProperty ;
+    rdfs:label "has input" .
+
+cco:ont00001986 rdf:type owl:ObjectProperty ;
+    rdfs:label "has output" .
+
+### ============================================================ ###
+### FACILITIES                                                   ###
+### ============================================================ ###
+
+ex:MilitaryFacility rdf:type owl:Class ;
+    rdfs:subClassOf cco:ont00000192 ;                # Facility
+    rdfs:label "Military Facility" ;
+    obo:IAO_0000115 "A Facility that is designed, operated, and maintained by a military organization." ;
+    jio:derivedFrom "JP 1 (primary; PDF not in repo)" ,
+                    "JP 2-0 §III-6 to §III-8 (CCMD/JTF intelligence infrastructure context)" .
+
+ex:IntelligenceOperationsCenter rdf:type owl:Class ;
+    rdfs:subClassOf ex:MilitaryFacility ;
+    rdfs:label "Intelligence Operations Center" ;
+    obo:IAO_0000115 "A Military Facility that serves as the central node for gathering, analyzing, and disseminating intelligence within a Combatant Command or Joint Task Force." ;
+    jio:derivedFrom "JP 2-0 §III-7 ¶2.b" ,
+                    "JP 2-0 GL-7 (formal Glossary definition)" .
+
+### ============================================================ ###
+### MATERIAL ENTITIES                                            ###
+### ============================================================ ###
+
+ex:Target rdf:type owl:Class ;
+    rdfs:subClassOf obo:BFO_0000040 ;                # Material Entity
+    rdfs:label "Target" ;
+    obo:IAO_0000115 "A Material Entity that has been designated for observation, engagement, or analysis by a military or intelligence organization. Targets participate in analytical processes via has_participant; this class does not encode the intentional act of targeting (a Joint Force Commander function out of v1.0 scope)." ;
+    jio:derivedFrom "JP 3-60 ch.II (primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §I-19 ¶3.b(d)" .
+
+### ============================================================ ###
+### INFORMATION CONTENT ENTITIES — Intelligence Product subtree  ###
+### ============================================================ ###
+
+ex:IntelligenceProduct rdf:type owl:Class ;
+    rdfs:subClassOf obo:IAO_0000030 ;                # Information Content Entity
+    rdfs:label "Intelligence Product" ;
+    obo:IAO_0000115 "An Information Content Entity produced as the output of a collection or analytical process and intended to inform intelligence consumers. Discipline-neutral parent of GEOINT/SIGINT/HUMINT/MASINT product subtrees; v1.0 axiomatizes the GEOINT subtree, with the others reserved as v2.0 forward extension points." ;
+    jio:derivedFrom "JP 2-0 §I-18 ¶3.a-f (Categories of Intelligence Products, Figure I-6)" .
+
+ex:GEOINTProduct rdf:type owl:Class ;
+    rdfs:subClassOf ex:IntelligenceProduct ;
+    rdfs:label "GEOINT Product" ;
+    obo:IAO_0000115 "An Intelligence Product whose content is geospatial in nature — imagery, geospatial analysis, or geospatially-anchored derived products." ;
+    jio:derivedFrom "JP 2-0 Appendix B (Intelligence Disciplines — GEOINT subsection)" .
+
+ex:Imagery rdf:type owl:Class ;
+    rdfs:subClassOf ex:GEOINTProduct ;
+    rdfs:label "Imagery" ;
+    obo:IAO_0000115 "A GEOINT Product that provides a visual or sensor-derived representation of an entity, area, or region." ;
+    jio:derivedFrom "JP 2-0 Appendix B (GEOINT — imagery as a GEOINT product)" .
+
+ex:PostStrikeImagery rdf:type owl:Class ;
+    rdfs:subClassOf ex:Imagery ;
+    rdfs:label "Post-Strike Imagery" ;
+    obo:IAO_0000115 "Imagery that represents the visual state of a target following a kinetic or non-kinetic strike, used to assess physical damage and enable downstream Combat Assessment processes." ;
+    jio:derivedFrom "JP 2-0 §IV-15 ¶10.a(1) (Phase I BDA — post-attack target analysis with imagery sources enumerated)" .
+
+ex:GeospatialAnalysisReport rdf:type owl:Class ;
+    rdfs:subClassOf ex:GEOINTProduct ;
+    rdfs:label "Geospatial Analysis Report" ;
+    obo:IAO_0000115 "A GEOINT Product that synthesizes geospatial observations into an analytical report, distinguishing it from raw Imagery as a primary sensor product." ;
+    jio:derivedFrom "JP 2-0 Appendix B (GEOINT — analytical products)" .
+
+# Discipline-specific Intelligence Product subtrees — declared as v2.0
+# forward extension points per scope §3.4. Not axiomatized in v1.0
+# beyond the subClassOf placement, so future ticket extensions don't
+# refactor the ICE root hierarchy.
+
+ex:SIGINTProduct rdf:type owl:Class ;
+    rdfs:subClassOf ex:IntelligenceProduct ;
+    rdfs:label "SIGINT Product" ;
+    obo:IAO_0000115 "An Intelligence Product produced from signals intelligence collection. Declared in v1.0 as a forward extension point; sub-classes and axioms reserved for v2.0." ;
+    jio:derivedFrom "JP 2-0 Appendix B (SIGINT subsection)" ;
+    obo:IAO_0000116 "v2.0 forward extension point — intentionally unaxiomatized in v1.0 per scope §3.4." .
+
+ex:HUMINTProduct rdf:type owl:Class ;
+    rdfs:subClassOf ex:IntelligenceProduct ;
+    rdfs:label "HUMINT Product" ;
+    obo:IAO_0000115 "An Intelligence Product produced from human intelligence collection. Declared in v1.0 as a forward extension point; sub-classes and axioms reserved for v2.0." ;
+    jio:derivedFrom "JP 2-0 Appendix B (HUMINT subsection)" ;
+    obo:IAO_0000116 "v2.0 forward extension point — intentionally unaxiomatized in v1.0 per scope §3.4." .
+
+ex:MASINTProduct rdf:type owl:Class ;
+    rdfs:subClassOf ex:IntelligenceProduct ;
+    rdfs:label "MASINT Product" ;
+    obo:IAO_0000115 "An Intelligence Product produced from measurement and signature intelligence collection. Declared in v1.0 as a forward extension point; sub-classes and axioms reserved for v2.0." ;
+    jio:derivedFrom "JP 2-0 Appendix B (MASINT subsection)" ;
+    obo:IAO_0000116 "v2.0 forward extension point — intentionally unaxiomatized in v1.0 per scope §3.4." .
+
+### ============================================================ ###
+### INFORMATION CONTENT ENTITIES — Report subtree                ###
+### ============================================================ ###
+
+ex:Report rdf:type owl:Class ;
+    rdfs:subClassOf obo:IAO_0000030 ;
+    rdfs:label "Report" ;
+    obo:IAO_0000115 "An Information Content Entity designed to convey the results of an analysis, investigation, or observation in a form suitable for downstream consumption by other intelligence processes or commanders." ;
+    jio:derivedFrom "JP 2-0 §I-15 ¶3.d (intelligence products presented in many forms)" .
+
+ex:Phase1BDAReport rdf:type owl:Class ;
+    rdfs:subClassOf ex:Report ;
+    rdfs:label "Phase I BDA Report" ;
+    obo:IAO_0000115 "A Report that documents the estimated quantitative extent of physical damage sustained by a target element following a strike — output of Phase I (Physical Damage Assessment) Battle Damage Assessment." ;
+    jio:derivedFrom "JP 3-60 App C (Phase I PDA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-15 ¶10.a(1)" .
+
+ex:Phase2BDAReport rdf:type owl:Class ;
+    rdfs:subClassOf ex:Report ;
+    rdfs:label "Phase II BDA Report" ;
+    obo:IAO_0000115 "A Report that documents the assessed remaining functional capability of a target following a strike — output of Phase II (Functional Damage Assessment) Battle Damage Assessment." ;
+    jio:derivedFrom "JP 3-60 App C (Phase II FDA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-15 ¶10.a(2)" .
+
+ex:Phase3BDAReport rdf:type owl:Class ;
+    rdfs:subClassOf ex:Report ;
+    rdfs:label "Phase III BDA Report" ;
+    obo:IAO_0000115 "A Report that documents the assessed effect on the broader target system (lines of communication, command-and-control network, integrated air defense, etc.) — output of Phase III (Target System Assessment) Battle Damage Assessment. Also referred to as a Target System Assessment Report." ;
+    jio:derivedFrom "JP 3-60 App C (Phase III TSA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-16 ¶10.a(3)(b)" .
+
+ex:MEAReport rdf:type owl:Class ;
+    rdfs:subClassOf ex:Report ;
+    rdfs:label "MEA Report" ;
+    obo:IAO_0000115 "A Report that documents the assessed effectiveness of a munition's employment — whether the weapon was delivered as planned, the fuze functioned, and the warhead achieved expected effect on a target of the observed type. Output of Munitions Effectiveness Assessment." ;
+    jio:derivedFrom "JP 3-60 App C (MEA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-16 ¶10.b" .
+
+ex:RARReport rdf:type owl:Class ;
+    rdfs:subClassOf ex:Report ;
+    rdfs:label "RAR Report" ;
+    obo:IAO_0000115 "A Report that documents a Re-Attack Recommendation, synthesizing target-system effect (Phase III BDA) and weapon effectiveness (MEA) into a recommendation for further action delivered to the Joint Force Commander." ;
+    jio:derivedFrom "JP 3-60 App C (RAR — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-16 ¶10.c" .
+
+### ============================================================ ###
+### ROLES                                                        ###
+### ============================================================ ###
+
+# ex:AnalyticalRole — structural parent for analytical roles; introduced
+# per PR #12 §1 to make anti-rigidity (no Person sub-classing) compose
+# with the doctrinal specialization TargetAnalyst ⊑ IntelligenceAnalyst.
+# Not in scope §3.2's enumeration; documented in docs/patterns.md
+# §"Anti-rigidity Person/Role separation".
+
+ex:AnalyticalRole rdf:type owl:Class ;
+    rdfs:subClassOf cco:ont00000984 ;                # OccupationRole
+    rdfs:label "Analytical Role" ;
+    obo:IAO_0000115 "An Occupation Role pertaining to intelligence analysis activities. Structural parent of more specific analytical role classes (e.g., TargetAnalysisRole). Distinguishes intelligence-analytical occupational roles from the broader CCO OccupationRole class (which includes roles like 'marine biologist' or 'carpenter' that are not analytical)." ;
+    jio:derivedFrom "JP 2-0 §I-15 ¶3.d (analyst function as occupational role)" .
+
+ex:TargetAnalysisRole rdf:type owl:Class ;
+    rdfs:subClassOf ex:AnalyticalRole ;
+    rdfs:label "Target Analysis Role" ;
+    obo:IAO_0000115 "An Analytical Role specifically pertaining to target analysis — assessing physical damage, functional damage, target-system effect, and recommending further action against designated targets. Realized by an Agent's participation in Battle Damage Assessment, Target System Assessment, or Re-Attack Recommendation processes." ;
+    jio:derivedFrom "JP 3-60 ch.II (targeting cell roles — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §I-19 ¶3.b(d)" .
+
+### ============================================================ ###
+### AGENTS — defined classes via owl:equivalentClass              ###
+### (anti-rigidity refactor per scope §5 #5 + PR #12 §1)         ###
+### ============================================================ ###
+
+# IntelligenceAnalyst is NOT subClassOf cco:ont00001262 (Person) — that
+# would re-introduce the v0 rigidity bug. It is a defined class whose
+# membership is determined by Person + bearer_of an AnalyticalRole.
+# Anti-rigidity holds: bearing the role is what makes one an analyst,
+# not class membership in Person.
+
+ex:IntelligenceAnalyst rdf:type owl:Class ;
+    owl:equivalentClass [
+        rdf:type owl:Class ;
+        owl:intersectionOf (
+            cco:ont00001262                          # Person
+            [ rdf:type owl:Restriction ;
+              owl:onProperty obo:RO_0000053 ;        # bearer of
+              owl:someValuesFrom ex:AnalyticalRole ]
+        )
+    ] ;
+    rdfs:label "Intelligence Analyst" ;
+    obo:IAO_0000115 "A Person who is the bearer of an Analytical Role — i.e., a Person tasked to evaluate, integrate, and interpret information to produce intelligence. Class membership is determined by role-bearing, not by rigid Person sub-classing (anti-rigidity per scope §5 #5)." ;
+    jio:derivedFrom "JP 2-0 §I-15 ¶3.d (analyst function — Analysis and Production)" .
+
+# TargetAnalyst is similarly defined-via-role-bearing. The relation
+# TargetAnalyst ⊑ IntelligenceAnalyst is INFERRED via the role hierarchy
+# (TargetAnalysisRole ⊑ AnalyticalRole), NOT asserted directly.
+
+ex:TargetAnalyst rdf:type owl:Class ;
+    owl:equivalentClass [
+        rdf:type owl:Class ;
+        owl:intersectionOf (
+            cco:ont00001262                          # Person
+            [ rdf:type owl:Restriction ;
+              owl:onProperty obo:RO_0000053 ;        # bearer of
+              owl:someValuesFrom ex:TargetAnalysisRole ]
+        )
+    ] ;
+    rdfs:label "Target Analyst" ;
+    obo:IAO_0000115 "A Person who is the bearer of a Target Analysis Role — specializing in target damage assessment, target-system analysis, and re-attack recommendation. By the role hierarchy (TargetAnalysisRole ⊑ AnalyticalRole), every Target Analyst is also an Intelligence Analyst by inference." ;
+    jio:derivedFrom "JP 3-60 ch.II (targeting cell roles — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §I-19 ¶3.b(d)" .
+
+### ============================================================ ###
+### PROCESSES — Combat Assessment umbrella                       ###
+### ============================================================ ###
+
+ex:CombatAssessmentProcess rdf:type owl:Class ;
+    rdfs:subClassOf obo:BFO_0000015 ;                # Process
+    rdfs:label "Combat Assessment Process" ;
+    obo:IAO_0000115 "A Process that determines the overall effectiveness of force employment during military operations. Doctrinally decomposed into Battle Damage Assessment (Phases I/II/III), Munitions Effectiveness Assessment, and Re-Attack Recommendation per JP 3-60 App C." ;
+    jio:derivedFrom "JP 3-60 App C (Combat Assessment — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-15 ¶10" .
+
+ex:BattleDamageAssessmentProcess rdf:type owl:Class ;
+    rdfs:subClassOf ex:CombatAssessmentProcess ;
+    rdfs:label "Battle Damage Assessment Process" ;
+    obo:IAO_0000115 "A Combat Assessment Process that estimates the damage or degradation resulting from the application of military force on a target. Doctrinally decomposed into three sequential phases: Physical Damage Assessment (Phase I), Functional Damage Assessment (Phase II), and Target System Assessment (Phase III)." ;
+    jio:derivedFrom "JP 3-60 App C (BDA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-15 ¶10.a" .
+
+### ============================================================ ###
+### PROCESSES — Combat Assessment leaves (defined classes)        ###
+### Encoding per scope §5 #3 (Option α): owl:equivalentClass     ###
+### with necessary AND sufficient conditions on inputs/outputs.   ###
+### Temporal-ordering and process-mereology constraints carried   ###
+### as additional rdfs:subClassOf restrictions (necessary only).  ###
+### EL-profile-syntactically valid; reasons under ELK (B3) and    ###
+### HermiT (B5).                                                  ###
+### ============================================================ ###
+
+# Phase 1 BDA — Physical Damage Assessment.
+# has_input is permissive (some IntelligenceProduct) per Onto C-4 from
+# JI-001 review: Phase 1 BDA can consume any post-strike sensor product;
+# tying it strictly to PostStrikeImagery would break v2.0 forward-compat.
+
+ex:Phase1BattleDamageAssessment rdf:type owl:Class ;
+    owl:equivalentClass [
+        rdf:type owl:Class ;
+        owl:intersectionOf (
+            obo:BFO_0000015                          # Process
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001921 ;       # has input
+              owl:someValuesFrom ex:IntelligenceProduct ]
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001986 ;       # has output
+              owl:someValuesFrom ex:Phase1BDAReport ]
+        )
+    ] ;
+    rdfs:subClassOf ex:BattleDamageAssessmentProcess ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty cco:ont00001857 ;             # is part of process
+        owl:someValuesFrom ex:CombatAssessmentProcess
+    ] ;
+    rdfs:label "Phase I Battle Damage Assessment" ;
+    obo:IAO_0000115 "A Battle Damage Assessment Process that estimates the quantitative extent of physical damage sustained by a target entity using post-strike sensor inputs. Defined by its input/output signature: an Intelligence Product input and a Phase I BDA Report output. Phase 1 has no required temporal predecessor — it is the entry point of the BDA chain." ;
+    jio:derivedFrom "JP 3-60 App C (Phase I PDA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-15 ¶10.a(1)" .
+
+# Phase 2 BDA — Functional Damage Assessment.
+
+ex:Phase2BattleDamageAssessment rdf:type owl:Class ;
+    owl:equivalentClass [
+        rdf:type owl:Class ;
+        owl:intersectionOf (
+            obo:BFO_0000015
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001921 ;
+              owl:someValuesFrom ex:Phase1BDAReport ]
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001986 ;
+              owl:someValuesFrom ex:Phase2BDAReport ]
+        )
+    ] ;
+    rdfs:subClassOf ex:BattleDamageAssessmentProcess ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty obo:BFO_0000062 ;             # preceded by
+        owl:someValuesFrom ex:Phase1BattleDamageAssessment
+    ] ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty cco:ont00001857 ;
+        owl:someValuesFrom ex:CombatAssessmentProcess
+    ] ;
+    rdfs:label "Phase II Battle Damage Assessment" ;
+    obo:IAO_0000115 "A Battle Damage Assessment Process that estimates the remaining functional capability of a target following a strike — given the observed physical damage, what can the target still do? Defined by its input/output signature: a Phase I BDA Report input and a Phase II BDA Report output. Temporally preceded by a Phase I BDA." ;
+    jio:derivedFrom "JP 3-60 App C (Phase II FDA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-15 ¶10.a(2)" .
+
+# Phase 3 BDA — Target System Assessment.
+# IAO_0000116 (editor note) records v2.0 deferral of theater-intelligence
+# context input (per Onto C-5 from JI-001 review).
+
+ex:Phase3BattleDamageAssessment rdf:type owl:Class ;
+    owl:equivalentClass [
+        rdf:type owl:Class ;
+        owl:intersectionOf (
+            obo:BFO_0000015
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001921 ;
+              owl:someValuesFrom ex:Phase2BDAReport ]
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001986 ;
+              owl:someValuesFrom ex:Phase3BDAReport ]
+        )
+    ] ;
+    rdfs:subClassOf ex:BattleDamageAssessmentProcess ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty obo:BFO_0000062 ;
+        owl:someValuesFrom ex:Phase2BattleDamageAssessment
+    ] ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty cco:ont00001857 ;
+        owl:someValuesFrom ex:CombatAssessmentProcess
+    ] ;
+    rdfs:label "Phase III Battle Damage Assessment" ;
+    obo:IAO_0000115 "A Battle Damage Assessment Process that estimates the effect on the broader target system — adversary lines of communication, command-and-control, integrated air defense, etc. Defined by its input/output signature: a Phase II BDA Report input and a Phase III BDA Report output. Temporally preceded by a Phase II BDA." ;
+    obo:IAO_0000116 "v2.0 will extend has_input to include broader theater-intelligence context (logistics overlays, adversary order of battle, etc.) per scope §4 deferral. v1.0 models only the Phase II BDA Report input as a structural simplification; the doctrinal reality is that Phase III TSA also consumes theater-context information. See docs/patterns.md §'iao:editor_note for deferred-scope concepts.'" ;
+    jio:derivedFrom "JP 3-60 App C (Phase III TSA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-16 ¶10.a(3)" .
+
+# MEA — Munitions Effectiveness Assessment.
+# Sister sub-process of BDA (NOT a child) — runs in parallel based on
+# the same Phase 1 observations; assesses weapon performance.
+
+ex:MunitionsEffectivenessAssessment rdf:type owl:Class ;
+    owl:equivalentClass [
+        rdf:type owl:Class ;
+        owl:intersectionOf (
+            obo:BFO_0000015
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001921 ;
+              owl:someValuesFrom ex:IntelligenceProduct ]
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001986 ;
+              owl:someValuesFrom ex:MEAReport ]
+        )
+    ] ;
+    rdfs:subClassOf ex:CombatAssessmentProcess ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty obo:BFO_0000062 ;
+        owl:someValuesFrom ex:Phase1BattleDamageAssessment
+    ] ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty cco:ont00001857 ;
+        owl:someValuesFrom ex:CombatAssessmentProcess
+    ] ;
+    rdfs:label "Munitions Effectiveness Assessment" ;
+    obo:IAO_0000115 "A Combat Assessment Process that determines whether a munition was delivered as planned, its fuze functioned, and the warhead achieved expected effect on a target of the observed type. Defined by its input/output signature: an Intelligence Product input (post-strike observations) and a MEA Report output. Sister sub-process of BDA — not a child; informed by the same Phase I observations but assessing weapon performance rather than target damage." ;
+    jio:derivedFrom "JP 3-60 App C (MEA — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-16 ¶10.b" .
+
+# RAR — Re-Attack Recommendation.
+# Conjunctive predecessors per JI-001 doctrinal call: RAR is informed
+# by BOTH Phase III BDA AND MEA. Encoded as TWO separate restrictions in
+# the equivalentClass body (for inputs) AND TWO separate subClassOf
+# restrictions (for temporal ordering) — never as a single disjunction.
+
+ex:ReAttackRecommendation rdf:type owl:Class ;
+    owl:equivalentClass [
+        rdf:type owl:Class ;
+        owl:intersectionOf (
+            obo:BFO_0000015
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001921 ;       # has input — Phase 3 BDA Report
+              owl:someValuesFrom ex:Phase3BDAReport ]
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001921 ;       # has input — MEA Report (conjunctive)
+              owl:someValuesFrom ex:MEAReport ]
+            [ rdf:type owl:Restriction ;
+              owl:onProperty cco:ont00001986 ;
+              owl:someValuesFrom ex:RARReport ]
+        )
+    ] ;
+    rdfs:subClassOf ex:CombatAssessmentProcess ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty obo:BFO_0000062 ;             # preceded by Phase 3 BDA
+        owl:someValuesFrom ex:Phase3BattleDamageAssessment
+    ] ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty obo:BFO_0000062 ;             # preceded by MEA (conjunctive)
+        owl:someValuesFrom ex:MunitionsEffectivenessAssessment
+    ] ;
+    rdfs:subClassOf [
+        rdf:type owl:Restriction ;
+        owl:onProperty cco:ont00001857 ;
+        owl:someValuesFrom ex:CombatAssessmentProcess
+    ] ;
+    rdfs:label "Re-Attack Recommendation" ;
+    obo:IAO_0000115 "A Combat Assessment Process that synthesizes target-system effect (Phase III BDA Report) and weapon effectiveness (MEA Report) into a recommendation for further action delivered to the Joint Force Commander. Defined by its input/output signature: BOTH a Phase III BDA Report and a MEA Report as inputs (conjunctive — both required), and a RAR Report as output. Temporally preceded by both Phase III BDA AND MEA — neither alone is sufficient predecessor." ;
+    jio:derivedFrom "JP 3-60 App C (RAR — primary; JP 3-60 PDF not in repo)" ,
+                    "JP 2-0 §IV-16 ¶10.c" .
+
+### ============================================================ ###
+### CA SUB-PROCESS PAIRWISE DISJOINTNESS                         ###
+### Per Onto C-2 from JI-001 review: the five CA leaf classes    ###
+### are pairwise disjoint. Prevents type-level conflations and   ###
+### closes the gateway to transitive-precedence cycles between   ###
+### type-collapsed individuals. (Instance-level cycles within    ###
+### the same type are caught by Tester's temporal_consistency    ###
+### probe — separate concern.)                                   ###
+### ============================================================ ###
+
+[] rdf:type owl:AllDisjointClasses ;
+   owl:members (
+     ex:Phase1BattleDamageAssessment
+     ex:Phase2BattleDamageAssessment
+     ex:Phase3BattleDamageAssessment
+     ex:MunitionsEffectivenessAssessment
+     ex:ReAttackRecommendation
+   ) .
