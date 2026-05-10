@@ -288,13 +288,13 @@ A few patterns compose; documenting the interactions explicitly:
 
 ---
 
-## Pattern 7 — Reasoner profile compatibility (ELK for B3/B7, HermiT for B5)
+## Pattern 7 — Reasoner profile compatibility (ELK for B3 / B5 / B7)
 
 ### Statement
 
 Every axiom written into [src/ontology/jio-core.ttl](../src/ontology/jio-core.ttl) is **EL-profile syntactically valid** (uses only `equivalentClass`, `intersectionOf`, `someValuesFrom`, `subClassOf`, and `disjointWith` / `AllDisjointClasses` over the project's class names) so that the CI's B3 (TBox consistent) and B7 (adversarial probes) gates — both running ELK per [scripts/ci-gate.sh:96–106](../scripts/ci-gate.sh) — can classify the T-Box without falling back to a non-EL profile.
 
-A-Box consistency (B5) runs HermiT, which is fully OWL DL. The Q-O-3 untyped classification-test individuals classify correctly under both reasoners; the canonical scenario A-Box reasons cleanly under HermiT.
+A-Box consistency (B5) runs ELK per PR #18 — same reasoner as B3/B7 to keep CI under runtime budget. Switch from HermiT was forced by the same upper-ontology-classification timeout.
 
 ### When to use
 
@@ -321,7 +321,7 @@ JI-005 v1.0's encoding is EL-profile valid:
 
 - **Why ELK for B3?** Performance. The full closure of imports (BFO 2020 + RO + IAO + CCO Merged) is ~30K axioms. HermiT classification on that closure exceeds the GitHub Actions runner timeout. ELK runs in ~30s. CI green at all is the precondition for the rest of the workflow.
 
-- **Why HermiT for B5?** A-Box consistency checks may exercise inferences (e.g., `BFO_0000056 inverseOf BFO_0000057` from upstream BFO) that are non-EL. Running HermiT only on the merged T-Box+A-Box (much smaller than the full T-Box closure for B3) is tractable and gives full DL coverage where it matters.
+- **Why ELK for B5 (post PR #18)?** Originally planned as HermiT for full DL coverage; in practice the merged T-Box + A-Box closure on a fresh GitHub runner exceeded the 15-min workflow timeout (same root cause as B3 and B7). Switched to ELK in PR #18 (Tester emergency hotfix) for parity with B3/B7. Coverage gap: A-Box inconsistencies expressible only via DL features (universal restrictions, qualified cardinality on transitive properties, inverses for classification) wouldn't be caught at B5. Acceptable for v1.0 because scope §3 doesn't use those features. v1.x option: hybrid (ELK blocking + HermiT-with-runtime-cap warning) per Tester's logged retro item.
 
 - **What the v1.0 encoding deliberately did NOT use, even though scope or doctrine could have invited it:**
   - **Disjunctive RAR predecessors.** The doctrine reads as conjunctive (RAR consumes both Phase III BDA and MEA); encoded as two separate axioms, EL-valid. Disjunctive encoding would have used `unionOf`, non-EL.
@@ -344,7 +344,7 @@ JI-005 v1.0's encoding is EL-profile valid:
 | Permissive `IntelligenceProduct` input | §3.7; Onto C-4 from JI-001 review | JI-005 | Yes — testability neutral; not vetoed |
 | `jio:derivedFrom` doctrinal annotation | §5 #9; ADR-001 (Option B) | JI-005 | Implicit via ADR ratification |
 | `iao:editor_note` for deferred scope | §3.4, §4; Onto C-5 from JI-001 review | JI-005 | Implicit; documentary |
-| Reasoner profile compatibility (ELK B3/B7; HermiT B5) | scripts/ci-gate.sh:96–106 (PR #16); ELK switch from HermiT for runtime | JI-005 | Yes — directly tester-facing; not vetoed |
+| Reasoner profile compatibility (ELK B3 / B5 / B7) | scripts/ci-gate.sh (PR #16 B3/B7 + PR #18 B5); HermiT-on-full-closure exceeded the 15-min CI timeout at every gate where it was tried | JI-005 | Yes — directly tester-facing; not vetoed |
 
 ---
 

@@ -13,7 +13,7 @@
 
 <http://example.org/jp2/jio-core> rdf:type owl:Ontology ;
     rdfs:label   "JIO Core Ontology (v1.0 — Combat Assessment)" ;
-    rdfs:comment "Joint Intelligence Ontology v1.0. Axiomatizes the full Combat Assessment process per JP 3-60 App C (BDA Phases I/II/III + MEA + RAR), grounded in BFO/CCO/IAO/RO. Scope locked in docs/scope.md; canonical scenario at docs/scenarios/JI-005-canonical-ca.md; competency questions at docs/scenarios/JI-002-cqs.yaml; modeling patterns at docs/patterns.md; doctrinal citations at docs/citations/jp2-0-anchors.md. Defined-class axioms are EL-profile-syntactically valid (equivalentClass + intersectionOf + someValuesFrom) and reason cleanly under ELK (CI's B3 reasoner per PR #16); A-Box consistency (B5) uses HermiT for full DL coverage." ;
+    rdfs:comment "Joint Intelligence Ontology v1.0. Axiomatizes the full Combat Assessment process per JP 3-60 App C (BDA Phases I/II/III + MEA + RAR), grounded in BFO/CCO/IAO/RO. Scope locked in docs/scope.md; canonical scenario at docs/scenarios/JI-005-canonical-ca.md; competency questions at docs/scenarios/JI-002-cqs.yaml; modeling patterns at docs/patterns.md; doctrinal citations at docs/citations/jp2-0-anchors.md. Defined-class axioms are EL-profile-syntactically valid (equivalentClass + intersectionOf + someValuesFrom) and reason cleanly under ELK (CI's B3 reasoner per PR #16); A-Box consistency (B5) uses ELK per PR #18; HermiT-on-full-closure exceeded the 15-min CI timeout. v1.x reconsideration trigger documented in patterns.md Pattern 7." ;
     owl:imports <http://purl.obolibrary.org/obo/bfo.owl> ,
                 <http://purl.obolibrary.org/obo/ro.owl> ,
                 <http://purl.obolibrary.org/obo/iao.owl> ,
@@ -296,8 +296,8 @@ ex:BattleDamageAssessmentProcess rdf:type owl:Class ;
 ### with necessary AND sufficient conditions on inputs/outputs.   ###
 ### Temporal-ordering and process-mereology constraints carried   ###
 ### as additional rdfs:subClassOf restrictions (necessary only).  ###
-### EL-profile-syntactically valid; reasons under ELK (B3) and    ###
-### HermiT (B5).                                                  ###
+### EL-profile-syntactically valid; reasons under ELK at B3, B5,  ###
+### and B7 (B5 switched from HermiT in PR #18 — runtime).          ###
 ### ============================================================ ###
 
 # Phase 1 BDA — Physical Damage Assessment.
