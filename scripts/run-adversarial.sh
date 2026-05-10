@@ -86,8 +86,14 @@ for f in "${fixtures[@]}"; do
   echo "  probe: ${name}"
   log="/tmp/adv-${name}.log"
   out="/tmp/adv-${name}.owl"
+  # Reasoner choice: ELK for parity with B3 (scripts/ci-gate.sh). HermiT on the
+  # merged CCO+BFO+IAO+RO+stub ontology times out the 15-min workflow even on a
+  # single fixture; six fixtures sequentially is hopeless. ELK is sufficient
+  # for Phase 0 stub T-Box. JI-005 should reconsider when full doctrinal
+  # axioms land — at that point a hybrid (ELK for fast probes, HermiT for
+  # specific OWL DL-dependent probes) may be the right shape.
   if java -jar "${ROBOT_JAR}" ${CATALOG_FLAG} merge "${ARGS[@]}" \
-      reason --reasoner hermit --output "${out}" >"${log}" 2>&1; then
+      reason --reasoner elk --output "${out}" >"${log}" 2>&1; then
     echo "    reasoner: clean"
   else
     # Some probes (temporal_consistency_test) intentionally produce inconsistency.
