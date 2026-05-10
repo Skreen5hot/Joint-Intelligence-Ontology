@@ -8,9 +8,9 @@ Per Workflow v1.0 §7. Gates are ordered: each step's failure prevents subsequen
 |---|---|---|---|---|
 | B1 | TBox parses | T-Box must load | ROBOT `reason --reasoner HermiT` (parse phase) | never |
 | B2 | Imports resolve | All `owl:imports` resolve via catalog | ROBOT `merge --catalog` | T-Box has no `owl:imports` |
-| B3 | TBox consistent | No contradictions | ROBOT `reason --reasoner HermiT` | B1 failed |
+| B3 | TBox consistent | No contradictions | ROBOT `reason --reasoner ELK` | B1 failed |
 | B4 | No unsatisfiable named classes | No `C ⊑ owl:Nothing` for named C | ROBOT `report --profile profile-tester.tsv` | B3 failed |
-| B5 | ABox consistent | Every `src/instances/*.jsonld` merged with T-Box reasons clean | ROBOT `reason` per instance | no instance files present |
+| B5 | ABox consistent | Every `src/instances/*.jsonld` merged with T-Box reasons clean | ROBOT `reason --reasoner ELK` per instance | no instance files present |
 | B6 | CQ pass rate ≥ acceptance | Every `tests/competency/**/*.rq` returns must_infer ⊆ result and must_not_infer ∩ result = ∅ | `scripts/run-competency.sh` | no CQs present |
 | B7 | Adversarial probes | Each fixture under `tests/fixtures/adversarial/` runs without unexpected crash; per-fixture verdict against `expected.json` activates with canonical T-Box | `scripts/run-adversarial.sh` | no fixtures present |
 

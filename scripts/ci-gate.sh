@@ -134,6 +134,17 @@ SPARQL
 run_blocking "B4 No unsatisfiable named classes" gate_b4
 
 # ---- B5: ABox consistency ----------------------------------------------------
+# Reasoner choice: ELK, mirroring B3. Same upper-ontology closure
+# (BFO + CCO + IAO + RO) drives the same HermiT slowness on a GitHub runner.
+# HermiT timed out the 15-min workflow on JI-005 draft locally (>10min, killed);
+# ELK ran ~14s on the same merged ontology + A-Box. The OWL DL features ELK
+# doesn't fully support (universal restrictions, qualified cardinality on
+# transitive properties, inverses) aren't currently exercised by v1.0 scope §3
+# axiomatization. JI-005+ may revisit if axioms requiring full DL semantics on
+# A-Box reasoning become testable. Option (b) hybrid — ELK blocking + HermiT-
+# with-runtime-cap as a warning gate — is the right v1.x evolution and is
+# queued for the v1.1 retro alongside the swept-pattern lesson (this fix is the
+# B5 site of the recurring pattern PR #16 missed).
 gate_b5() {
   shopt -s nullglob
   local instances=(src/instances/*.jsonld src/instances/*.ttl)
@@ -144,7 +155,7 @@ gate_b5() {
   local rc=0
   for inst in "${instances[@]}"; do
     if ! "${ROBOT_RUN[@]}" ${CATALOG_FLAG} merge --input "${TBOX}" --input "${inst}" \
-          reason --reasoner hermit --output /tmp/reasoned-abox.owl >/dev/null; then
+          reason --reasoner elk --output /tmp/reasoned-abox.owl >/dev/null; then
       echo "  FAIL: ${inst}"
       rc=1
     else
