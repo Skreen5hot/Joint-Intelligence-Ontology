@@ -72,7 +72,9 @@ Source: [src/imports/ro.owl](../src/imports/ro.owl) · Version IRI: `http://purl
 
 ## Verified terms — IAO
 
-Source: [src/imports/iao-edit.owl](../src/imports/iao-edit.owl) · Version IRI: `http://purl.obolibrary.org/obo/iao/dev/iao-edit.owl` · Project import line: `<http://purl.obolibrary.org/obo/iao.owl>` ⚠ resolves via PURL but local file is the *dev edit* version. Catalog must map `iao.owl` → `iao-edit.owl` for offline runs (JI-003 concern).
+Source: [src/imports/iao.owl](../src/imports/iao.owl) · Version IRI: `http://purl.obolibrary.org/obo/iao/2026-03-30/iao.owl` · Project import line: `<http://purl.obolibrary.org/obo/iao.owl>` ✓ matches; production release vendored, self-contained (zero `owl:imports`).
+
+**Switched from dev-edit to production release.** The previously vendored `iao-edit.owl` declared 10 transitive `owl:imports` (BFO, OMO, RO, plus seven `iao/dev/*.owl` files that 404 on PURL), which hard-failed B1 in CI. The production release at the canonical PURL is self-contained and resolves cleanly offline via this catalog. All 18 cited IAO term IRIs (`IAO_0000030`, `IAO_0000115`, `IAO_0000119`, etc.) exist unchanged in the production release; no re-verification of term-level metadata required.
 
 | Prefixed | Full IRI | Type | Canonical Label | Notes | ✓ |
 |---|---|---|---|---|---|
